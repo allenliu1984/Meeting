@@ -1,5 +1,7 @@
 package com.example.calendarview;
 
+import java.util.List;
+
 import com.example.calendarview.CalendarController.EventHandler;
 import com.example.calendarview.CalendarController.EventInfo;
 import com.example.calendarview.CalendarController.EventType;
@@ -9,16 +11,20 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Intent;
+import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
+import android.widget.GridView;
 import android.widget.Toast;
 
-public class MainActivity extends Activity implements EventHandler, OnClickListener {
+public class MainActivity extends Activity implements EventHandler, OnClickListener, OnItemClickListener {
 
 	private CalendarController mController;
 	Fragment mMonthFragment;
@@ -31,24 +37,20 @@ public class MainActivity extends Activity implements EventHandler, OnClickListe
 
 	// add by allen liu
 	private Button mCreateBtn;
-	
+	private GridView mHourGrid;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
-		
+
 		new ImportEntries().execute(this);
 
 		mController = CalendarController.getInstance(this);
 
 		setContentView(R.layout.cal_layout);
 
-		/*
-		mCreateBtn = (Button) findViewById(R.id.create);
-		mCreateBtn.setOnClickListener(this);
-		*/
-		
 		mMonthFragment = new MonthByWeekFragment(System.currentTimeMillis(), false);
 
 		FragmentTransaction ft = getFragmentManager().beginTransaction();
@@ -56,13 +58,23 @@ public class MainActivity extends Activity implements EventHandler, OnClickListe
 
 		mController.registerEventHandler(R.id.cal_frame, (EventHandler) mMonthFragment);
 		mController.registerFirstEventHandler(0, this);
+
+		mHourGrid = (GridView) findViewById(R.id.hour_grid);
+
+		Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
+		mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+
+		List<ResolveInfo> apps = getPackageManager().queryIntentActivities(mainIntent, 0);
+
+		mHourGrid.setAdapter(new HourAdapter(apps));
+		mHourGrid.setOnItemClickListener(this);
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.activity_main, menu);
-		
+
 		return true;
 	}
 
@@ -70,18 +82,19 @@ public class MainActivity extends Activity implements EventHandler, OnClickListe
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// TODO Auto-generated method stub
 		final int menuId = item.getItemId();
-		switch(menuId){
+		switch (menuId) {
 			case R.id.menu_create:
 				Intent createMeet = new Intent();
 				createMeet.setClass(this, EditMeetingActivity.class);
 				startActivity(createMeet);
-				
+
 				break;
 			default:
 				break;
 		}
 		return super.onOptionsItemSelected(item);
 	}
+
 	@Override
 	public long getSupportedEventTypes() {
 		return EventType.GO_TO | EventType.VIEW_EVENT | EventType.UPDATE_TITLE;
@@ -110,7 +123,7 @@ public class MainActivity extends Activity implements EventHandler, OnClickListe
 			default:
 				break;
 		}
-		
+
 	}
 
 	@Override
@@ -133,6 +146,12 @@ public class MainActivity extends Activity implements EventHandler, OnClickListe
 				break;
 		}
 		*/
+	}
+
+	@Override
+	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+		// TODO create new event with a specific time
+		
 	}
 
 }

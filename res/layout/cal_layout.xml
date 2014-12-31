@@ -10,27 +10,34 @@
 
     <FrameLayout
         android:id="@+id/task_list"
-        android:layout_below="@id/cal_frame"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="match_parent"
+        android:layout_below="@id/cal_frame" >
 
         <ListView
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
         <TextView
-            android:gravity="center"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:gravity="center"
             android:text="@string/agenda_list" />
     </FrameLayout>
 
+    <GridView
+        android:id="@+id/hour_grid"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:columnWidth="60dp"
+        android:gravity="center"
+        android:horizontalSpacing="10dp"
+        android:numColumns="auto_fit"
+        android:padding="10dp"
+        android:stretchMode="columnWidth"
+        android:verticalSpacing="10dp" />
     
-    <TableRow 
-        
-        
-        ></TableRow>
-    <!-- 
+    <!--
     <Button
         android:id="@+id/create"
         android:maxHeight="60dp"
@@ -40,6 +47,6 @@
         android:layout_alignParentBottom="true"
         android:gravity="center"
         android:text="@string/create_meet" />
-     -->
+    -->
 
 </RelativeLayout>
