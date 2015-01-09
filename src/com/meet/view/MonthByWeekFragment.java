@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-package com.example.calendarview;
+package com.meet.view;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
 
 import android.app.Activity;
 import android.app.LoaderManager;
@@ -40,14 +45,11 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-
-import com.example.calendarview.CalendarController.EventInfo;
-import com.example.calendarview.CalendarController.EventType;
-import com.example.calendarview.CalendarController.ViewType;
+import com.meet.R;
+import com.meet.data.CalendarProvider;
+import com.meet.view.CalendarController.EventInfo;
+import com.meet.view.CalendarController.EventType;
+import com.meet.view.CalendarController.ViewType;
 
 public class MonthByWeekFragment extends SimpleDayPickerFragment implements
         CalendarController.EventHandler, LoaderManager.LoaderCallbacks<Cursor>, OnScrollListener,

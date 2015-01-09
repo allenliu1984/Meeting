@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.calendarview;
+package com.meet.view;
 
 import android.content.AsyncQueryHandler;
 import android.content.ContentResolver;

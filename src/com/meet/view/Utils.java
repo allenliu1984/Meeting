@@ -14,9 +14,20 @@
  * limitations under the License.
  */
 
-package com.example.calendarview;
+package com.meet.view;
 
 import static android.provider.CalendarContract.EXTRA_EVENT_BEGIN_TIME;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Formatter;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.TimeZone;
 
 import android.app.Activity;
 import android.app.SearchManager;
@@ -24,17 +35,13 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.LayerDrawable;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.text.format.DateFormat;
@@ -43,21 +50,8 @@ import android.text.format.Time;
 import android.util.Log;
 import android.widget.SearchView;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Formatter;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.TimeZone;
-
-import com.example.calendarview.CalendarUtils.TimeZoneUtils;
+import com.meet.R;
+import com.meet.view.CalendarUtils.TimeZoneUtils;
 
 public class Utils {
     private static final boolean DEBUG = false;

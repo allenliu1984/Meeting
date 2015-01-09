@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-package com.example.calendarview;
+package com.meet.view;
+
+import java.util.Calendar;
+import java.util.Formatter;
+import java.util.HashMap;
+import java.util.Locale;
 
 import android.app.Activity;
 import android.app.ListFragment;
@@ -36,10 +41,7 @@ import android.widget.AbsListView.OnScrollListener;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import java.util.Calendar;
-import java.util.Formatter;
-import java.util.HashMap;
-import java.util.Locale;
+import com.meet.R;
 
 /**
  * <p>

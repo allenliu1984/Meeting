@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-package com.example.calendarview;
+package com.meet.view;
+
+import java.security.InvalidParameterException;
+import java.util.Formatter;
+import java.util.HashMap;
+import java.util.Locale;
 
 import android.app.Service;
 import android.content.Context;
@@ -32,10 +37,7 @@ import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityManager;
 
-import java.security.InvalidParameterException;
-import java.util.Formatter;
-import java.util.HashMap;
-import java.util.Locale;
+import com.meet.R;
 
 /**
  * <p>

@@ -1,4 +1,4 @@
-package com.example.calendarview;
+package com.meet.view;
 
 import java.util.List;
 

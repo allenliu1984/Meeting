@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.calendarview"
+    package="com.meet"
     android:versionCode="1"
     android:versionName="1.0" >
 
@@ -16,7 +16,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.example.calendarview.MainActivity"
+            android:name="com.meet.view.MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -25,11 +25,17 @@
             </intent-filter>
         </activity>
         
-        <activity android:name="com.example.calendarview.EditMeetingActivity" />
+        <activity android:name="com.meet.view.EditMeetingActivity" />
 
         <provider
-            android:name="com.example.calendarview.CalendarProvider"
+            android:name="com.meet.data.CalendarProvider"
             android:authorities="com.example.calendarview.calendarprovider" />
+        
+        
+        <provider
+            android:name="com.meet.data.MeetProvider"
+            android:authorities="com.meet.data.meetprovider" />
+        
     </application>
 
 </manifest>

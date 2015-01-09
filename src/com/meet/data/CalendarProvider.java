@@ -1,4 +1,4 @@
-package com.example.calendarview;
+package com.meet.data;
 
 import java.util.HashMap;
 import java.util.List;
@@ -141,6 +141,7 @@ public class CalendarProvider extends ContentProvider {
 	    	String end = list.get(2);
 	    	selectionArgs = DatabaseUtils.appendSelectionArgs(selectionArgs,new String[] {start,end});
 	    }
+	    
 	    if(sortOrder == null || sortOrder == "")
 	    	sortOrder = START + " COLLATE LOCALIZED ASC";
 		Cursor c = sqlBuilder.query(db, projection, selection, selectionArgs,null,null, sortOrder);
@@ -174,10 +175,13 @@ public class CalendarProvider extends ContentProvider {
 		uriMatcher.addURI(AUTHORITY, EVENTS_TABLE+"/#/#", 3);
 		
 		mMap = new HashMap<String, String>();
+		
 		mMap.put(ID, ID);
 		mMap.put(EVENT, EVENT);
 		mMap.put(START, START);
 		mMap.put(LOCATION, LOCATION);
+		
+		
 		mMap.put(DESCRIPTION, DESCRIPTION);
 		mMap.put(END, END);
 		mMap.put(CALENDAR_ID, CALENDAR_ID);

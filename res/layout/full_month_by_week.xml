@@ -55,7 +55,7 @@
         android:layout_height="1px"
         android:background="@color/calendar_grid_line_inner_vertical_color" />
 
-    <com.example.calendarview.MonthListView
+    <com.meet.view.MonthListView
         android:id="@android:id/list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

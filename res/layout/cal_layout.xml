@@ -25,6 +25,7 @@
             android:text="@string/agenda_list" />
     </FrameLayout>
 
+    <!-- 
     <GridView
         android:id="@+id/hour_grid"
         android:layout_width="match_parent"
@@ -37,6 +38,7 @@
         android:stretchMode="columnWidth"
         android:verticalSpacing="10dp" />
     
+     -->
     <!--
     <Button
         android:id="@+id/create"

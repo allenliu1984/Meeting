@@ -1,28 +1,24 @@
-package com.example.calendarview;
+package com.meet.view;
 
-import java.util.List;
-
-import com.example.calendarview.CalendarController.EventHandler;
-import com.example.calendarview.CalendarController.EventInfo;
-import com.example.calendarview.CalendarController.EventType;
-
-import android.os.Bundle;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Intent;
-import android.content.pm.ResolveInfo;
-import android.database.Cursor;
+import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.GridView;
-import android.widget.Toast;
+
+import com.meet.R;
+import com.meet.view.CalendarController.EventHandler;
+import com.meet.view.CalendarController.EventInfo;
+import com.meet.view.CalendarController.EventType;
 
 public class MainActivity extends Activity implements EventHandler, OnClickListener, OnItemClickListener {
 
@@ -59,6 +55,7 @@ public class MainActivity extends Activity implements EventHandler, OnClickListe
 		mController.registerEventHandler(R.id.cal_frame, (EventHandler) mMonthFragment);
 		mController.registerFirstEventHandler(0, this);
 
+		/*
 		mHourGrid = (GridView) findViewById(R.id.hour_grid);
 
 		Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
@@ -68,12 +65,13 @@ public class MainActivity extends Activity implements EventHandler, OnClickListe
 
 		mHourGrid.setAdapter(new HourAdapter(apps));
 		mHourGrid.setOnItemClickListener(this);
+		*/
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.activity_main, menu);
+		getMenuInflater().inflate(R.menu.entry_menu, menu);
 
 		return true;
 	}

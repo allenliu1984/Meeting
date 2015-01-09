@@ -36,13 +36,48 @@
 
         <EditText
             android:id="@+id/topic"
-            android:layout_marginLeft="@dimen/view_gap"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/view_gap"
             android:focusable="true"
-            android:inputType="textAutoCorrect|textCapSentences"
+            android:inputType="textAutoCorrect|textCapSentences|"
             android:minHeight="48dip"
-            android:singleLine="true" />
+            android:singleLine="true"
+            android:hint="@string/meet_topic" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:text="@string/label_date" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="1.0" >
+
+            <Button
+                android:id="@+id/date"
+                android:layout_width="wrap_content"
+                android:layout_height="48dip"
+                android:layout_marginLeft="@dimen/view_gap"
+                android:layout_weight="0.6" />
+
+            <Button
+                android:id="@+id/time"
+                android:layout_width="wrap_content"
+                android:layout_height="48dip"
+                android:layout_marginLeft="@dimen/view_gap"
+                android:layout_weight="0.4"
+                android:minHeight="48dip" />
+        </LinearLayout>
     </LinearLayout>
 
     <LinearLayout
@@ -57,15 +92,15 @@
             android:layout_gravity="bottom"
             android:text="@string/label_location" />
 
-        <EditText
+        <Spinner
             android:id="@+id/location"
-            android:layout_marginLeft="@dimen/view_gap"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/view_gap"
+            android:entries="@array/meeting_rooms"
             android:focusable="true"
-            android:inputType="textAutoCorrect|textCapSentences"
-            android:minHeight="48dip"
-            android:singleLine="true" />
+            android:gravity="bottom|center_horizontal"
+            android:minHeight="48dip" />
     </LinearLayout>
 
     <LinearLayout
@@ -75,64 +110,28 @@
         android:orientation="horizontal" >
 
         <TextView
-            android:layout_gravity="bottom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/label_date" />
-
-        <Spinner
-            android:id="@+id/date"
-            android:layout_marginLeft="@dimen/view_gap"
-            android:layout_width="match_parent"
-            android:layout_height="48dip" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:focusable="true"
-        android:orientation="horizontal" >
-
-        <TextView
             android:layout_gravity="bottom"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/label_time" />
-
-        <Spinner
-            android:id="@+id/time"
-            android:layout_marginLeft="@dimen/view_gap"
-            android:minHeight="48dip"
-            android:layout_width="match_parent"
-            android:layout_height="48dip" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:focusable="true"
-        android:orientation="horizontal" >
-
-        <TextView
-            android:layout_gravity="bottom"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:text="@string/label_remind" />
 
         <Spinner
-            android:layout_marginLeft="@dimen/view_gap"
             android:id="@+id/remind_time"
             android:layout_width="match_parent"
             android:layout_height="48dip"
-            android:entries="@array/reminder_minutes_opt" />
+            android:layout_marginLeft="@dimen/view_gap"
+            android:entries="@array/reminder_minutes_opt"
+            android:gravity="bottom|center_horizontal" />
     </LinearLayout>
 
-        <Button
-            android:id="@+id/done"
-            android:layout_marginTop="20dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:text="@string/done" />
+    <!--
+    <Button
+        android:id="@+id/done"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="20dp"
+        android:text="@string/done" />
+    -->
 
 </LinearLayout>

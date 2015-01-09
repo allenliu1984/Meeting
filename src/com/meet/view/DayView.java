@@ -14,7 +14,15 @@
  * limitations under the License.
  */
 
-package com.example.calendarview;
+package com.meet.view;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Formatter;
+import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -78,16 +86,10 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Formatter;
-import java.util.Locale;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import com.example.calendarview.CalendarController.EventType;
-import com.example.calendarview.CalendarController.ViewType;
+import com.meet.R;
+import com.meet.data.CalendarData;
+import com.meet.view.CalendarController.EventType;
+import com.meet.view.CalendarController.ViewType;
 
 /**
  * View for multi-day view. So far only 1 and 7 day have been tested.
