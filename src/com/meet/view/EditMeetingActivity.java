@@ -36,6 +36,7 @@ import android.widget.TimePicker;
 
 import com.meet.R;
 import com.meet.data.MeetData;
+import com.meet.data.MeetData.Meet;
 
 public class EditMeetingActivity extends Activity implements OnClickListener {
 
@@ -48,14 +49,16 @@ public class EditMeetingActivity extends Activity implements OnClickListener {
 	private Button mDateSelBtn;
 	private Button mTimeSelBtn;
 	private Spinner mRemindSpin;
-	
+
 	private boolean mEditFinished = false;
 
 	private DateFormat mDateFormat;
 	private DateFormat mTimeFormat;
-	
-	
+
 	private GregorianCalendar mDate;
+
+	private final String TAG = "MeetEdit";
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -88,7 +91,8 @@ public class EditMeetingActivity extends Activity implements OnClickListener {
 		mDate = new GregorianCalendar();
 		mDate.set(Calendar.MINUTE, 0);
 		
-		String dateLabel = mDateFormat.format(mDate.getTime());
+		int flags = DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_WEEKDAY;
+		String dateLabel = DateUtils.formatDateTime(this, mDate.getTimeInMillis(), flags);
 		mDateSelBtn.setText(dateLabel);
 		
 		String timeLabel = mTimeFormat.format(mDate.getTime());
@@ -101,18 +105,18 @@ public class EditMeetingActivity extends Activity implements OnClickListener {
 		getMenuInflater().inflate(R.menu.edit_menu, menu);
 		return true;
 	}
-	
+
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		// TODO Auto-generated method stub
-		
-		if(mEditFinished){
+
+		if (mEditFinished) {
 			menu.removeItem(R.id.menu_finish);
-		} else{
+		} else {
 			menu.removeItem(R.id.menu_share);
 			menu.removeItem(R.id.menu_delete);
 		}
-		
+
 		return super.onPrepareOptionsMenu(menu);
 	}
 
@@ -120,32 +124,34 @@ public class EditMeetingActivity extends Activity implements OnClickListener {
 		// TODO Auto-generated method stub
 		Calendar cal = Calendar.getInstance();
 		final int id = v.getId();
-		
-		switch(id){
+
+		switch (id) {
 			case R.id.date:
-    			//TimeZone tz = TimeZone.getDefault();
-				DatePickerDialog dpd = new DatePickerDialog(this, mDateSetLsn, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
+				// TimeZone tz = TimeZone.getDefault();
+				DatePickerDialog dpd = new DatePickerDialog(this, mDateSetLsn, mDate.get(Calendar.YEAR),
+						mDate.get(Calendar.MONTH), mDate.get(Calendar.DAY_OF_MONTH));
 				dpd.show();
 				break;
 			case R.id.time:
-				TimePickerDialog tpd = new TimePickerDialog(this,mTimeSetLsn , cal.get(Calendar.HOUR_OF_DAY), 0, true);
+				TimePickerDialog tpd = new TimePickerDialog(this, mTimeSetLsn, mDate.get(Calendar.HOUR_OF_DAY),
+						0, true);
 				tpd.show();
 				break;
 			default:
 				break;
 		}
-		
+
 	}
 
-	
 	private OnDateSetListener mDateSetLsn = new OnDateSetListener() {
 
 		@Override
 		public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
 			// TODO Auto-generated method stub
 			mDate.set(year, monthOfYear, dayOfMonth);
-			
-			String dateLabel = mDateFormat.format(mDate.getTime());
+
+			int flags = DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_WEEKDAY;
+			String dateLabel = DateUtils.formatDateTime(EditMeetingActivity.this, mDate.getTimeInMillis(), flags);
 			mDateSelBtn.setText(dateLabel);
 		}
 	};
@@ -155,9 +161,9 @@ public class EditMeetingActivity extends Activity implements OnClickListener {
 		@Override
 		public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
 			// TODO Auto-generated method stub
-			mDate.set(Calendar.HOUR_OF_DAY,hourOfDay);
-			mDate.set(Calendar.MINUTE,minute);
-			
+			mDate.set(Calendar.HOUR_OF_DAY, hourOfDay);
+			mDate.set(Calendar.MINUTE, minute);
+
 			String dateLabel = mTimeFormat.format(mDate.getTime());
 			mTimeSelBtn.setText(dateLabel);
 		}
@@ -211,7 +217,7 @@ public class EditMeetingActivity extends Activity implements OnClickListener {
 		}
 		view.setText(timeString);
 	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// TODO Auto-generated method stub
@@ -219,8 +225,10 @@ public class EditMeetingActivity extends Activity implements OnClickListener {
 		switch (menuId) {
 			case R.id.menu_finish:
 				Meet meet = generateMeet();
+
+				MeetRemindReceiver.showRemind(this, meet);
 				setupMeet(meet);
-				
+
 				invalidateOptionsMenu();
 				break;
 			case R.id.menu_share:
@@ -232,70 +240,64 @@ public class EditMeetingActivity extends Activity implements OnClickListener {
 		}
 		return super.onOptionsItemSelected(item);
 	}
-	
-	private static int [] PRE_REMIND_MINUTE = new int []{
-		15,
-		30
-	};
-	
-	private void setMeetAlarm(Meet meet){
-		
-		
+
+	private static int[] PRE_REMIND_MINUTE = new int[] {15, 30};
+
+	private void setMeetAlarm(Meet meet) {
+
 	}
-	
-	private Meet generateMeet(){
-		
+
+	private Meet generateMeet() {
+
 		Meet meet = new Meet();
-		
+
 		meet.topic = mTopic.getText().toString();
-		if(TextUtils.isEmpty(meet.topic)){
+		if (TextUtils.isEmpty(meet.topic)) {
 			meet.topic = mTopic.getHint().toString();
 		}
-		
-		meet.location= (String)mLocation.getSelectedItem();
+
+		meet.location = (String) mLocation.getSelectedItem();
 		meet.dateMillis = mDate.getTimeInMillis();
 		meet.preMinute = PRE_REMIND_MINUTE[mRemindSpin.getSelectedItemPosition()];
-		
+
 		return meet;
 	}
-	
-	private void setupMeet(Meet meet){
 
-		if(meet == null){
+	private void setupMeet(Meet meet) {
+
+		if (meet == null) {
+			Log.e(TAG, "meet can not be null");
 			return;
 		}
-		
+
 		Uri uri = writeDb(meet);
-		
-		long triggerTime = meet.dateMillis - meet.preMinute*60*1000;
-		
+
+		long triggerTime = meet.dateMillis - meet.preMinute * 60 * 1000;
+
 		Intent trigAction = new Intent();
 		trigAction.setClass(this, MeetRemindReceiver.class);
+		trigAction.setAction(MeetRemindReceiver.ACTION_REMIND);
 		trigAction.setData(uri);
-		
+
 		PendingIntent pi = PendingIntent.getBroadcast(this, 0, trigAction, PendingIntent.FLAG_ONE_SHOT);
-		
+
 		AlarmManager alm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-		alm.setExact(AlarmManager.RTC,triggerTime , pi);
+		alm.setExact(AlarmManager.RTC, triggerTime, pi);
+
+		mEditFinished = true;
 	}
-	
-	
-	private Uri writeDb(Meet meet){
+
+	private Uri writeDb(Meet meet) {
 		ContentValues cv = new ContentValues();
-		
+
 		cv.put(MeetData.KEY_TOPIC, meet.topic);
 		cv.put(MeetData.KEY_WHEN, meet.dateMillis);
 		cv.put(MeetData.KEY_WHERE, meet.location);
 		cv.put(MeetData.KEY_PRE_TIME, meet.preMinute);
-		
+
 		ContentResolver cr = getContentResolver();
-		
+
 		return cr.insert(MeetData.URI, cv);
 	}
-	private class Meet{
-		String topic;
-		String location;
-		long dateMillis;
-		int  preMinute;
-	}
+
 }
