@@ -9,7 +9,8 @@
         android:targetSdkVersion="17" />
 
     <uses-permission android:name="android.permission.READ_CALENDAR" />
-
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
@@ -24,18 +25,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        
         <activity android:name="com.meet.view.EditMeetingActivity" />
 
         <provider
             android:name="com.meet.data.CalendarProvider"
             android:authorities="com.example.calendarview.calendarprovider" />
-        
-        
         <provider
             android:name="com.meet.data.MeetProvider"
             android:authorities="com.meet.data.meetprovider" />
-        
     </application>
 
 </manifest>

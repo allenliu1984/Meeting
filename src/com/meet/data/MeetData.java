@@ -17,6 +17,7 @@ public interface MeetData {
 		public String location;
 		public long dateMillis;
 		public int  preMinute;
+		public Uri dbUri;
 	}
 	
 }

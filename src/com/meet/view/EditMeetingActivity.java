@@ -1,10 +1,12 @@
 package com.meet.view;
 
-import java.text.DateFormat;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.TimeZone;
+
+import org.xmlpull.v1.XmlSerializer;
 
 import android.app.Activity;
 import android.app.AlarmManager;
@@ -17,11 +19,11 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.util.Log;
+import android.util.Xml;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -31,7 +33,6 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.meet.R;
@@ -50,15 +51,18 @@ public class EditMeetingActivity extends Activity implements OnClickListener {
 	private Button mTimeSelBtn;
 	private Spinner mRemindSpin;
 
-	private boolean mEditFinished = false;
-
-	private DateFormat mDateFormat;
-	private DateFormat mTimeFormat;
-
 	private GregorianCalendar mDate;
 
 	private final String TAG = "MeetEdit";
 
+	private Meet mOrigMeet;
+	
+	private final String TAG_MEET = "meet";
+	private final String ATTR_TOPIC = "topic";
+	private final String ATTR_WHEN = "when";
+	private final String ATTR_LOCATION = "location";
+	private final String ATTR_PRE_TIME = "pretime";
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -83,10 +87,10 @@ public class EditMeetingActivity extends Activity implements OnClickListener {
 		mRemindSpin = (Spinner) findViewById(R.id.remind_time);
 		mRemindSpin.setSelection(0);
 
-		mDateFormat = android.text.format.DateFormat.getDateFormat(this);
-		mTimeFormat = android.text.format.DateFormat.getTimeFormat(this);
+//		mDateFormat = android.text.format.DateFormat.getDateFormat(this);
+//		mTimeFormat = android.text.format.DateFormat.getTimeFormat(this);
 		
-		Calendar cal = Calendar.getInstance();
+		//Calendar cal = Calendar.getInstance();
 		
 		mDate = new GregorianCalendar();
 		mDate.set(Calendar.MINUTE, 0);
@@ -95,7 +99,10 @@ public class EditMeetingActivity extends Activity implements OnClickListener {
 		String dateLabel = DateUtils.formatDateTime(this, mDate.getTimeInMillis(), flags);
 		mDateSelBtn.setText(dateLabel);
 		
-		String timeLabel = mTimeFormat.format(mDate.getTime());
+		//incre one hour from now
+		final int hour = mDate.get(Calendar.HOUR_OF_DAY);
+		mDate.set(Calendar.HOUR_OF_DAY, hour + 1);
+		String timeLabel =DateUtils.formatDateTime(this, mDate.getTimeInMillis(), DateUtils.FORMAT_SHOW_TIME);
 		mTimeSelBtn.setText(timeLabel);
 	}
 
@@ -110,7 +117,7 @@ public class EditMeetingActivity extends Activity implements OnClickListener {
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		// TODO Auto-generated method stub
 
-		if (mEditFinished) {
+		if (mOrigMeet != null) {
 			menu.removeItem(R.id.menu_finish);
 		} else {
 			menu.removeItem(R.id.menu_share);
@@ -164,59 +171,10 @@ public class EditMeetingActivity extends Activity implements OnClickListener {
 			mDate.set(Calendar.HOUR_OF_DAY, hourOfDay);
 			mDate.set(Calendar.MINUTE, minute);
 
-			String dateLabel = mTimeFormat.format(mDate.getTime());
+			String dateLabel = DateUtils.formatDateTime(EditMeetingActivity.this, mDate.getTimeInMillis(), DateUtils.FORMAT_SHOW_TIME);
 			mTimeSelBtn.setText(dateLabel);
 		}
 	};
-
-	private void setDate(TextView view, long millis) {
-		int flags = DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_YEAR | DateUtils.FORMAT_SHOW_WEEKDAY
-				| DateUtils.FORMAT_ABBREV_MONTH | DateUtils.FORMAT_ABBREV_WEEKDAY;
-
-		// Unfortunately, DateUtils doesn't support a timezone other than the
-		// default timezone provided by the system, so we have this ugly hack
-		// here to trick it into formatting our time correctly. In order to
-		// prevent all sorts of craziness, we synchronize on the TimeZone class
-		// to prevent other threads from reading an incorrect timezone from
-		// calls to TimeZone#getDefault()
-		// TODO fix this if/when DateUtils allows for passing in a timezone
-		String dateString = "";
-		synchronized (TimeZone.class) {
-			/*
-			TimeZone.setDefault(TimeZone.getTimeZone(mTimezone));
-			dateString = DateUtils.formatDateTime(mActivity, millis, flags);
-			// setting the default back to null restores the correct behavior
-			TimeZone.setDefault(null);
-			*/
-		}
-		view.setText(dateString);
-	}
-
-	private void setTime(TextView view, long millis) {
-		/*
-		int flags = DateUtils.FORMAT_SHOW_TIME;
-		flags |= DateUtils.FORMAT_CAP_NOON_MIDNIGHT;
-		if (DateFormat.is24HourFormat(mActivity)) {
-		    flags |= DateUtils.FORMAT_24HOUR;
-		}
-		*/
-		// Unfortunately, DateUtils doesn't support a timezone other than the
-		// default timezone provided by the system, so we have this ugly hack
-		// here to trick it into formatting our time correctly. In order to
-		// prevent all sorts of craziness, we synchronize on the TimeZone class
-		// to prevent other threads from reading an incorrect timezone from
-		// calls to TimeZone#getDefault()
-		// TODO fix this if/when DateUtils allows for passing in a timezone
-		String timeString = "";
-		synchronized (TimeZone.class) {
-			/*
-			TimeZone.setDefault(TimeZone.getTimeZone(mTimezone));
-			timeString = DateUtils.formatDateTime(mActivity, millis, flags);
-			TimeZone.setDefault(null);
-			*/
-		}
-		view.setText(timeString);
-	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -224,14 +182,13 @@ public class EditMeetingActivity extends Activity implements OnClickListener {
 		final int menuId = item.getItemId();
 		switch (menuId) {
 			case R.id.menu_finish:
-				Meet meet = generateMeet();
-
-				MeetRemindReceiver.showRemind(this, meet);
-				setupMeet(meet);
-
+				mOrigMeet = generateMeet();
+				setupMeetRemind(mOrigMeet);
 				invalidateOptionsMenu();
 				break;
 			case R.id.menu_share:
+				
+				shareMeet(mOrigMeet);
 				break;
 			case R.id.menu_delete:
 				break;
@@ -242,10 +199,6 @@ public class EditMeetingActivity extends Activity implements OnClickListener {
 	}
 
 	private static int[] PRE_REMIND_MINUTE = new int[] {15, 30};
-
-	private void setMeetAlarm(Meet meet) {
-
-	}
 
 	private Meet generateMeet() {
 
@@ -260,34 +213,6 @@ public class EditMeetingActivity extends Activity implements OnClickListener {
 		meet.dateMillis = mDate.getTimeInMillis();
 		meet.preMinute = PRE_REMIND_MINUTE[mRemindSpin.getSelectedItemPosition()];
 
-		return meet;
-	}
-
-	private void setupMeet(Meet meet) {
-
-		if (meet == null) {
-			Log.e(TAG, "meet can not be null");
-			return;
-		}
-
-		Uri uri = writeDb(meet);
-
-		long triggerTime = meet.dateMillis - meet.preMinute * 60 * 1000;
-
-		Intent trigAction = new Intent();
-		trigAction.setClass(this, MeetRemindReceiver.class);
-		trigAction.setAction(MeetRemindReceiver.ACTION_REMIND);
-		trigAction.setData(uri);
-
-		PendingIntent pi = PendingIntent.getBroadcast(this, 0, trigAction, PendingIntent.FLAG_ONE_SHOT);
-
-		AlarmManager alm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-		alm.setExact(AlarmManager.RTC, triggerTime, pi);
-
-		mEditFinished = true;
-	}
-
-	private Uri writeDb(Meet meet) {
 		ContentValues cv = new ContentValues();
 
 		cv.put(MeetData.KEY_TOPIC, meet.topic);
@@ -297,7 +222,83 @@ public class EditMeetingActivity extends Activity implements OnClickListener {
 
 		ContentResolver cr = getContentResolver();
 
-		return cr.insert(MeetData.URI, cv);
+		meet.dbUri = cr.insert(MeetData.URI, cv);
+
+		return meet;
 	}
+
+	private void setupMeetRemind(Meet meet) {
+
+		if (meet == null) {
+			Log.e(TAG, "meet can not be null");
+			return;
+		}
+
+		long triggerTime = meet.dateMillis - meet.preMinute * 60 * 1000;
+
+		Intent trigAction = new Intent();
+		trigAction.setClass(this, MeetRemindReceiver.class);
+		trigAction.setAction(MeetRemindReceiver.ACTION_REMIND);
+		trigAction.setData(meet.dbUri);
+
+		PendingIntent pi = PendingIntent.getBroadcast(this, 0, trigAction, PendingIntent.FLAG_ONE_SHOT);
+
+		AlarmManager alm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+		alm.setExact(AlarmManager.RTC, triggerTime, pi);
+	}
+
+	
+	private void shareMeet(Meet meet){
+		if(meet == null){
+			Log.e(TAG, "meet can not be null");
+		}
+		
+		genMeetFile(meet);
+	}
+	
+    String genMeetFile(Meet meet) {
+        // Keep the old stopped packages around until we know the new ones have
+        // been successfully written.
+        File meetFile = new File("/sdcard/test.met");
+        
+        try {
+        	meetFile.createNewFile();
+        	
+            final FileOutputStream fstr = new FileOutputStream(meetFile);
+            final BufferedOutputStream str = new BufferedOutputStream(fstr);
+
+            final XmlSerializer serializer = Xml.newSerializer();
+            serializer.setOutput(str, "utf-8");
+            serializer.startDocument(null, true);
+            serializer.setFeature("http://xmlpull.org/v1/doc/features.html#indent-output", true);
+
+			serializer.startTag(null, TAG_MEET);
+			
+			serializer.attribute(null, ATTR_TOPIC, meet.topic);
+			serializer.attribute(null, ATTR_LOCATION, meet.location);
+			serializer.attribute(null, ATTR_PRE_TIME, String.valueOf(meet.preMinute));
+			serializer.attribute(null, ATTR_WHEN, String.valueOf(meet.dateMillis));
+			
+			serializer.endTag(null, TAG_MEET);
+
+            serializer.endDocument();
+
+            str.flush();
+            fstr.getFD().sync();
+            
+            fstr.close();
+            str.close();
+
+            // New settings successfully written, old ones are no longer
+            // needed.
+            return "";
+        } catch(java.io.IOException e) {
+            Log.e(TAG, "generate meet file failed !!!", e);
+        }
+
+        
+        return "";
+    }
+
 
 }
