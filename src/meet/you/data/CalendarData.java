@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.meet.data;
+package meet.you.data;
 
 public final class CalendarData {
     public static final String[] s12HoursNoAmPm = { "12", "1", "2", "3", "4",

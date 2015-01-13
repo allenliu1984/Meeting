@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-package com.meet.view;
+package meet.you;
 
+import meet.you.CalendarController.EventInfo;
+import meet.you.CalendarController.EventType;
 import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
@@ -30,9 +32,7 @@ import android.widget.ProgressBar;
 import android.widget.ViewSwitcher;
 import android.widget.ViewSwitcher.ViewFactory;
 
-import com.meet.R;
-import com.meet.view.CalendarController.EventInfo;
-import com.meet.view.CalendarController.EventType;
+import meet.you.R;
 
 /**
  * This is the base class for Day and Week Activities.

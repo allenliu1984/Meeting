@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.meet.view;
+package meet.you;
 
 // TODO Remove calendar imports when the required methods have been
 // refactored into the public api

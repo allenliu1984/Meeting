@@ -1,4 +1,4 @@
-package com.meet.data;
+package meet.you.data;
 
 import android.net.Uri;
 
@@ -19,5 +19,16 @@ public interface MeetData {
 		public int  preMinute;
 		public Uri dbUri;
 	}
+	
+	public interface XmlItem{
+		public static String TAG_MEET = "meet";
+		public static String ATTR_TOPIC = "topic";
+		public static String ATTR_WHEN = "when";
+		public static String ATTR_LOCATION = "location";
+		public static String ATTR_PRE_TIME = "pretime";
+	}
+	
+
+	public static final String MET_SUFIX = ".xml";
 	
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.meet.view;
+package meet.you;
 
 import java.security.InvalidParameterException;
 import java.util.Formatter;
@@ -37,7 +37,7 @@ import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityManager;
 
-import com.meet.R;
+import meet.you.R;
 
 /**
  * <p>

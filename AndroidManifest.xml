@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.meet"
+    package="meet.you"
     android:versionCode="1"
     android:versionName="1.0" >
 
@@ -10,14 +10,14 @@
 
     <uses-permission android:name="android.permission.READ_CALENDAR" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.meet.view.MainActivity"
+            android:name="meet.you.MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -25,14 +25,30 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.meet.view.EditMeetingActivity" />
+        <activity android:name="meet.you.EditMeetingActivity" >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
 
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:scheme="file" />
+                <data android:mimeType="*/*" />
+                <data android:pathPattern=".*//.met" />
+            </intent-filter>
+        </activity>
+
+        <!--
+                        <data android:scheme="file" />
+                <data android:mimeType="*/*" />
+                <data android:host="*.met" />
+                <data android:pathPattern=".*.*.*.met" />
+        -->
         <provider
-            android:name="com.meet.data.CalendarProvider"
+            android:name="meet.you.data.CalendarProvider"
             android:authorities="com.example.calendarview.calendarprovider" />
         <provider
-            android:name="com.meet.data.MeetProvider"
-            android:authorities="com.meet.data.meetprovider" />
+            android:name="meet.you.data.MeetProvider"
+            android:authorities="meet.you.data.meetprovider" />
     </application>
 
 </manifest>

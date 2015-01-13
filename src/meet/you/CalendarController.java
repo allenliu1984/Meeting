@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.meet.view;
+package meet.you;
 
 import static android.provider.CalendarContract.EXTRA_EVENT_BEGIN_TIME;
 import static android.provider.CalendarContract.EXTRA_EVENT_END_TIME;

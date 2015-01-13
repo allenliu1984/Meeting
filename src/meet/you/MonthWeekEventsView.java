@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.meet.view;
+package meet.you;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,7 +49,7 @@ import android.view.MotionEvent;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityManager;
 
-import com.meet.R;
+import meet.you.R;
 
 public class MonthWeekEventsView extends SimpleWeekView {
 

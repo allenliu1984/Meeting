@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.meet.view;
+package meet.you;
 
 import static android.provider.CalendarContract.EXTRA_EVENT_BEGIN_TIME;
 
@@ -29,6 +29,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
+import meet.you.CalendarUtils.TimeZoneUtils;
 import android.app.Activity;
 import android.app.SearchManager;
 import android.content.BroadcastReceiver;
@@ -50,8 +51,7 @@ import android.text.format.Time;
 import android.util.Log;
 import android.widget.SearchView;
 
-import com.meet.R;
-import com.meet.view.CalendarUtils.TimeZoneUtils;
+import meet.you.R;
 
 public class Utils {
     private static final boolean DEBUG = false;

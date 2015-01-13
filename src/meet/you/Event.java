@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.meet.view;
+package meet.you;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,7 +36,7 @@ import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.util.Log;
 
-import com.meet.R;
+import meet.you.R;
 
 // TODO: should Event be Parcelable so it can be passed via Intents?
 public class Event implements Cloneable {

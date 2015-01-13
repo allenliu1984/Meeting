@@ -1,5 +1,8 @@
-package com.meet.view;
+package meet.you;
 
+import meet.you.CalendarController.EventHandler;
+import meet.you.CalendarController.EventInfo;
+import meet.you.CalendarController.EventType;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
@@ -15,10 +18,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.GridView;
 
-import com.meet.R;
-import com.meet.view.CalendarController.EventHandler;
-import com.meet.view.CalendarController.EventInfo;
-import com.meet.view.CalendarController.EventType;
+import meet.you.R;
 
 public class MainActivity extends Activity implements EventHandler, OnClickListener, OnItemClickListener {
 

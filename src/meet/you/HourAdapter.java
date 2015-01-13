@@ -1,4 +1,4 @@
-package com.meet.view;
+package meet.you;
 
 import java.util.List;
 

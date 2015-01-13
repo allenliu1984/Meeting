@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.meet.view;
+package meet.you;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,6 +24,9 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import meet.you.CalendarController.EventType;
+import meet.you.CalendarController.ViewType;
+import meet.you.data.CalendarData;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
@@ -86,10 +89,7 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
-import com.meet.R;
-import com.meet.data.CalendarData;
-import com.meet.view.CalendarController.EventType;
-import com.meet.view.CalendarController.ViewType;
+import meet.you.R;
 
 /**
  * View for multi-day view. So far only 1 and 7 day have been tested.

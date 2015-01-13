@@ -1,13 +1,13 @@
-package com.meet.view;
+package meet.you;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-import org.xmlpull.v1.XmlSerializer;
-
+import meet.you.data.Constants;
+import meet.you.data.MeetData;
+import meet.you.data.MeetUtil;
+import meet.you.data.Util;
+import meet.you.data.MeetData.Meet;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.DatePickerDialog;
@@ -23,7 +23,6 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.util.Log;
-import android.util.Xml;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -35,9 +34,12 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TimePicker;
 
-import com.meet.R;
-import com.meet.data.MeetData;
-import com.meet.data.MeetData.Meet;
+import meet.you.R;
+import com.tencent.mm.sdk.openapi.IWXAPI;
+import com.tencent.mm.sdk.openapi.SendMessageToWX;
+import com.tencent.mm.sdk.openapi.WXAPIFactory;
+import com.tencent.mm.sdk.openapi.WXFileObject;
+import com.tencent.mm.sdk.openapi.WXMediaMessage;
 
 public class EditMeetingActivity extends Activity implements OnClickListener {
 
@@ -57,18 +59,15 @@ public class EditMeetingActivity extends Activity implements OnClickListener {
 
 	private Meet mOrigMeet;
 	
-	private final String TAG_MEET = "meet";
-	private final String ATTR_TOPIC = "topic";
-	private final String ATTR_WHEN = "when";
-	private final String ATTR_LOCATION = "location";
-	private final String ATTR_PRE_TIME = "pretime";
-	
+	private IWXAPI mWXapi;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.new_meet);
 
+		mWXapi = WXAPIFactory.createWXAPI(this, Constants.APP_ID);
+		
 		mTopic = (EditText) findViewById(R.id.topic);
 		mTopic.selectAll();
 		
@@ -187,10 +186,14 @@ public class EditMeetingActivity extends Activity implements OnClickListener {
 				invalidateOptionsMenu();
 				break;
 			case R.id.menu_share:
+				String path = MeetUtil.genMeetFile(mOrigMeet);
+				Log.v(TAG, "path=" + path);
 				
-				shareMeet(mOrigMeet);
+				sendToWeixin(path);
+				
 				break;
 			case R.id.menu_delete:
+				MeetUtil.readMeetFromFile("/sdcard/test.met");
 				break;
 			default:
 				break;
@@ -198,6 +201,28 @@ public class EditMeetingActivity extends Activity implements OnClickListener {
 		return super.onOptionsItemSelected(item);
 	}
 
+	
+	private void sendToWeixin(String path){
+		final WXFileObject appdata = new WXFileObject();
+		
+		appdata.filePath = path;
+		appdata.fileData = Util.readFromFile(path, 0, -1);
+		//appdata.extInfo = "this is ext info";
+
+		final WXMediaMessage msg = new WXMediaMessage();
+		msg.setThumbImage(Util.extractThumbNail(path, 150, 150, true));
+		msg.title = path;
+		msg.description = "Meeting Request";
+		msg.mediaObject = appdata;
+		
+		SendMessageToWX.Req req = new SendMessageToWX.Req();
+		req.transaction = Util.buildTransaction("appdata");
+		req.message = msg;
+		req.scene = /*isTimelineCb.isChecked() ? SendMessageToWX.Req.WXSceneTimeline : */SendMessageToWX.Req.WXSceneSession;
+		
+		mWXapi.sendReq(req);
+		
+	}
 	private static int[] PRE_REMIND_MINUTE = new int[] {15, 30};
 
 	private Meet generateMeet() {
@@ -246,59 +271,5 @@ public class EditMeetingActivity extends Activity implements OnClickListener {
 		AlarmManager alm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 		alm.setExact(AlarmManager.RTC, triggerTime, pi);
 	}
-
-	
-	private void shareMeet(Meet meet){
-		if(meet == null){
-			Log.e(TAG, "meet can not be null");
-		}
-		
-		genMeetFile(meet);
-	}
-	
-    String genMeetFile(Meet meet) {
-        // Keep the old stopped packages around until we know the new ones have
-        // been successfully written.
-        File meetFile = new File("/sdcard/test.met");
-        
-        try {
-        	meetFile.createNewFile();
-        	
-            final FileOutputStream fstr = new FileOutputStream(meetFile);
-            final BufferedOutputStream str = new BufferedOutputStream(fstr);
-
-            final XmlSerializer serializer = Xml.newSerializer();
-            serializer.setOutput(str, "utf-8");
-            serializer.startDocument(null, true);
-            serializer.setFeature("http://xmlpull.org/v1/doc/features.html#indent-output", true);
-
-			serializer.startTag(null, TAG_MEET);
-			
-			serializer.attribute(null, ATTR_TOPIC, meet.topic);
-			serializer.attribute(null, ATTR_LOCATION, meet.location);
-			serializer.attribute(null, ATTR_PRE_TIME, String.valueOf(meet.preMinute));
-			serializer.attribute(null, ATTR_WHEN, String.valueOf(meet.dateMillis));
-			
-			serializer.endTag(null, TAG_MEET);
-
-            serializer.endDocument();
-
-            str.flush();
-            fstr.getFD().sync();
-            
-            fstr.close();
-            str.close();
-
-            // New settings successfully written, old ones are no longer
-            // needed.
-            return "";
-        } catch(java.io.IOException e) {
-            Log.e(TAG, "generate meet file failed !!!", e);
-        }
-
-        
-        return "";
-    }
-
-
+    
 }

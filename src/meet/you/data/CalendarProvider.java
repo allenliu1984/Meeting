@@ -1,4 +1,4 @@
-package com.meet.data;
+package meet.you.data;
 
 import java.util.HashMap;
 import java.util.List;

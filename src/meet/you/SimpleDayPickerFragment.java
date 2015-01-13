@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.meet.view;
+package meet.you;
 
 import java.util.Calendar;
 import java.util.Formatter;
@@ -41,7 +41,7 @@ import android.widget.AbsListView.OnScrollListener;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.meet.R;
+import meet.you.R;
 
 /**
  * <p>

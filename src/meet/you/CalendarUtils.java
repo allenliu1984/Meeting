@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.meet.view;
+package meet.you;
 
 import android.content.AsyncQueryHandler;
 import android.content.ContentResolver;

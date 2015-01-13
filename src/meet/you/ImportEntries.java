@@ -1,12 +1,11 @@
-package com.meet.view;
+package meet.you;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
-import com.meet.data.CalendarProvider;
-
+import meet.you.data.CalendarProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;

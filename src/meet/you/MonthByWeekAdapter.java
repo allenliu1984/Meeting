@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-package com.meet.view;
+package meet.you;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import meet.you.CalendarController.EventType;
+import meet.you.CalendarController.ViewType;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.text.format.Time;
@@ -30,9 +32,7 @@ import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.AbsListView.LayoutParams;
 
-import com.meet.R;
-import com.meet.view.CalendarController.EventType;
-import com.meet.view.CalendarController.ViewType;
+import meet.you.R;
 
 public class MonthByWeekAdapter extends SimpleWeeksAdapter {
     private static final String TAG = "MonthByWeek";

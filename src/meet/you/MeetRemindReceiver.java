@@ -1,10 +1,11 @@
-package com.meet.view;
+package meet.you;
 
 import java.util.Date;
 
-import com.meet.R;
-import com.meet.data.MeetData;
-import com.meet.data.MeetData.Meet;
+import meet.you.data.MeetData;
+import meet.you.data.MeetData.Meet;
+
+import meet.you.R;
 
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;

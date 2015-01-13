@@ -1,4 +1,4 @@
-package com.meet.data;
+package meet.you.data;
 
 import java.util.HashMap;
 import java.util.List;
@@ -22,7 +22,7 @@ public class MeetProvider extends ContentProvider {
 
 	private static final String DATABASE_NAME = "Meet";
 	private static final String TABLE_NAME = "met";
-	private static final String AUTHORITY = "com.meet.data.meetprovider";
+	private static final String AUTHORITY = "meet.you.data.meetprovider";
 	
 	private static final int DATABASE_VERSION = 1;
 
