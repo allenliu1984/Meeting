@@ -6,6 +6,7 @@ public interface MeetData {
 	
 	public static Uri URI = MeetProvider.CONTENT_URI;
 	
+	public static String KEY_ID = MeetProvider.ID;
 	public static String KEY_TOPIC = MeetProvider.KEY_TOPIC;
 	public static String KEY_WHEN = MeetProvider.KEY_DATE;
 	public static String KEY_WHERE = MeetProvider.KEY_WHERE;

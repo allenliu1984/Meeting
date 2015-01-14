@@ -351,7 +351,7 @@ public class EditMeetingActivity extends Activity implements OnClickListener {
 		PendingIntent pi = PendingIntent.getBroadcast(this, 0, trigAction, PendingIntent.FLAG_ONE_SHOT);
 
 		AlarmManager alm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-		alm.setExact(AlarmManager.RTC, triggerTime, pi);
+		alm.set(AlarmManager.RTC, triggerTime, pi);
 	}
 
 	

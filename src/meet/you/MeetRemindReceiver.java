@@ -4,9 +4,7 @@ import java.util.Date;
 
 import meet.you.data.MeetData;
 import meet.you.data.MeetData.Meet;
-
 import meet.you.R;
-
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
@@ -17,6 +15,7 @@ import android.net.Uri;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.TextView;
 
 public class MeetRemindReceiver extends BroadcastReceiver{
@@ -81,7 +80,10 @@ public class MeetRemindReceiver extends BroadcastReceiver{
 		adb.setTitle(R.string.meet_remind);
 		adb.setView(panel);
 		adb.setPositiveButton(R.string.remind_ok, null);
-		adb.create().show();
+		
+		AlertDialog ad = adb.create();
+		ad.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+		ad.show();
 	}
 
 }

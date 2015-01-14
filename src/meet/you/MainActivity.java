@@ -1,13 +1,23 @@
 package meet.you;
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+
 import meet.you.CalendarController.EventHandler;
 import meet.you.CalendarController.EventInfo;
 import meet.you.CalendarController.EventType;
+import meet.you.data.MeetData;
+import meet.you.data.MeetData.Meet;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.content.ContentResolver;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
+import android.text.format.DateUtils;
+import android.text.format.Time;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,7 +27,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.GridView;
-
+import android.widget.ListView;
 import meet.you.R;
 
 public class MainActivity extends Activity implements EventHandler, OnClickListener, OnItemClickListener {
@@ -35,6 +45,10 @@ public class MainActivity extends Activity implements EventHandler, OnClickListe
 	private Button mCreateBtn;
 	private GridView mHourGrid;
 
+	private final String TAG = "MA";
+
+	private ListView mMeetList;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -46,6 +60,8 @@ public class MainActivity extends Activity implements EventHandler, OnClickListe
 		mController = CalendarController.getInstance(this);
 
 		setContentView(R.layout.cal_layout);
+
+		mMeetList = (ListView) findViewById(R.id.meet_list);
 
 		mMonthFragment = new MonthByWeekFragment(System.currentTimeMillis(), false);
 
@@ -104,11 +120,20 @@ public class MainActivity extends Activity implements EventHandler, OnClickListe
 		final int type = event.eventType;
 		switch (type) {
 			case EventType.GO_TO:
-				this.mEvent = event;
+				/*
+				mEvent = event;
 				mDayView = true;
 				FragmentTransaction ft = getFragmentManager().beginTransaction();
 				mDayFragment = new DayFragment(event.startTime.toMillis(true), 1);
 				ft.replace(R.id.cal_frame, mDayFragment).addToBackStack(null).commit();
+				*/
+
+				long timeMillis = event.startTime.toMillis(true);
+				showFocusDateMeet(event.startTime);
+				String timeLabel = DateUtils.formatDateTime(this, timeMillis, DateUtils.FORMAT_SHOW_DATE
+						| DateUtils.FORMAT_SHOW_TIME);
+
+				Log.v(TAG, timeLabel);
 				break;
 			case EventType.VIEW_EVENT:
 				mDayView = false;
@@ -149,7 +174,57 @@ public class MainActivity extends Activity implements EventHandler, OnClickListe
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 		// TODO create new event with a specific time
-		
+
 	}
 
+	private void showFocusDateMeet(Time focusTime) {
+
+		GregorianCalendar focusDate = new GregorianCalendar(focusTime.year, focusTime.month,
+				focusTime.monthDay);
+
+		long dayStart = focusDate.getTimeInMillis();
+
+		focusDate.roll(Calendar.DAY_OF_MONTH, true);
+
+		long dayEnd = focusDate.getTimeInMillis();
+
+		ContentResolver cr = getContentResolver();
+
+		Cursor cs = cr.query(MeetData.URI, MeetListAdapter.DATA_COL,
+
+		MeetData.KEY_WHEN + ">=? " + " AND " + MeetData.KEY_WHEN + "< ?",
+
+		new String[] {String.valueOf(dayStart), String.valueOf(dayEnd)}, null);
+
+		if (cs != null) {
+
+			final int N = cs.getCount();
+
+			if (N > 0) {
+				MeetListAdapter mla = new MeetListAdapter(this, cs, false);
+				mMeetList.setAdapter(mla);
+			}
+//			for (int i = 0; i < N; i++) {
+//				if (cs.moveToPosition(i)) {
+//					Meet meet = new Meet();
+//
+//					meet.topic = cs.getString(0);
+//					meet.location = cs.getString(1);
+//					meet.dateMillis = cs.getLong(2);
+//				}
+//			}
+
+			// cs.close();
+
+		}
+	}
+
+	@Override
+	protected void onDestroy() {
+		// TODO Auto-generated method stub
+		super.onDestroy();
+
+		MeetListAdapter mla = (MeetListAdapter) mMeetList.getAdapter();
+		mla.changeCursor(null);
+	}
 }
