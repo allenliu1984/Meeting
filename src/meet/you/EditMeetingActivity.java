@@ -10,6 +10,7 @@ import meet.you.data.Util;
 import meet.you.data.MeetData.Meet;
 import android.app.Activity;
 import android.app.AlarmManager;
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.PendingIntent;
@@ -18,7 +19,10 @@ import android.app.TimePickerDialog.OnTimeSetListener;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
@@ -33,8 +37,8 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TimePicker;
-
 import meet.you.R;
+
 import com.tencent.mm.sdk.openapi.IWXAPI;
 import com.tencent.mm.sdk.openapi.SendMessageToWX;
 import com.tencent.mm.sdk.openapi.WXAPIFactory;
@@ -58,8 +62,9 @@ public class EditMeetingActivity extends Activity implements OnClickListener {
 	private final String TAG = "MeetEdit";
 
 	private Meet mOrigMeet;
-	
+
 	private IWXAPI mWXapi;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -67,42 +72,99 @@ public class EditMeetingActivity extends Activity implements OnClickListener {
 		setContentView(R.layout.new_meet);
 
 		mWXapi = WXAPIFactory.createWXAPI(this, Constants.APP_ID);
-		
+
 		mTopic = (EditText) findViewById(R.id.topic);
 		mTopic.selectAll();
-		
+
+		/*
 		InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 		imm.viewClicked(mTopic);
+		*/
 		
 		mLocation = (Spinner) findViewById(R.id.location);
 		mLocation.setSelection(0);
-		
+
 		mDateSelBtn = (Button) findViewById(R.id.date);
 		mDateSelBtn.setOnClickListener(this);
-		
+
 		mTimeSelBtn = (Button) findViewById(R.id.time);
 		mTimeSelBtn.setOnClickListener(this);
-		
+
 		mRemindSpin = (Spinner) findViewById(R.id.remind_time);
 		mRemindSpin.setSelection(0);
 
-//		mDateFormat = android.text.format.DateFormat.getDateFormat(this);
-//		mTimeFormat = android.text.format.DateFormat.getTimeFormat(this);
-		
-		//Calendar cal = Calendar.getInstance();
-		
+		Uri data = getIntent().getData();
+		if (data != null) {
+			initByUri(data);
+		} else {
+			initDefault();
+		}
+	}
+
+	private void initByUri(Uri data) {
+		Meet meetReq = MeetUtil.readMeetFromFile(data.getPath());
+
+		if (meetReq == null) {
+			showFailDlg();
+			return;
+		}
+
+		mTopic.setText(meetReq.topic);
+		mTopic.setEnabled(false);
+
 		mDate = new GregorianCalendar();
-		mDate.set(Calendar.MINUTE, 0);
-		
+		mDate.setTimeInMillis(meetReq.dateMillis);
+
 		int flags = DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_WEEKDAY;
 		String dateLabel = DateUtils.formatDateTime(this, mDate.getTimeInMillis(), flags);
 		mDateSelBtn.setText(dateLabel);
-		
-		//incre one hour from now
+		mDateSelBtn.setEnabled(false);
+
+		// incre one hour from now
 		final int hour = mDate.get(Calendar.HOUR_OF_DAY);
 		mDate.set(Calendar.HOUR_OF_DAY, hour + 1);
-		String timeLabel =DateUtils.formatDateTime(this, mDate.getTimeInMillis(), DateUtils.FORMAT_SHOW_TIME);
+		String timeLabel = DateUtils
+				.formatDateTime(this, mDate.getTimeInMillis(), DateUtils.FORMAT_SHOW_TIME);
 		mTimeSelBtn.setText(timeLabel);
+		mTimeSelBtn.setEnabled(false);
+
+		int pos = findLocation(meetReq.location);
+		mLocation.setSelection(pos);
+		mLocation.setEnabled(false);
+
+		setTitle(R.string.meeting_request);
+	}
+
+	private void showFailDlg() {
+		// TODO Auto-generated method stub
+		AlertDialog.Builder adb = new AlertDialog.Builder(this);
+		adb.setMessage(R.string.meet_req_failed);
+		adb.setPositiveButton(R.string.remind_ok, new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				// TODO Auto-generated method stub
+				finish();
+			}
+		});
+	}
+
+	private void initDefault() {
+		mDate = new GregorianCalendar();
+		mDate.set(Calendar.MINUTE, 0);
+
+		int flags = DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_WEEKDAY;
+		String dateLabel = DateUtils.formatDateTime(this, mDate.getTimeInMillis(), flags);
+		mDateSelBtn.setText(dateLabel);
+
+		// incre one hour from now
+		final int hour = mDate.get(Calendar.HOUR_OF_DAY);
+		mDate.set(Calendar.HOUR_OF_DAY, hour + 1);
+		String timeLabel = DateUtils
+				.formatDateTime(this, mDate.getTimeInMillis(), DateUtils.FORMAT_SHOW_TIME);
+		mTimeSelBtn.setText(timeLabel);
+		
+		setTitle(R.string.meeting_create);
 	}
 
 	@Override
@@ -139,8 +201,8 @@ public class EditMeetingActivity extends Activity implements OnClickListener {
 				dpd.show();
 				break;
 			case R.id.time:
-				TimePickerDialog tpd = new TimePickerDialog(this, mTimeSetLsn, mDate.get(Calendar.HOUR_OF_DAY),
-						0, true);
+				TimePickerDialog tpd = new TimePickerDialog(this, mTimeSetLsn,
+						mDate.get(Calendar.HOUR_OF_DAY), 0, true);
 				tpd.show();
 				break;
 			default:
@@ -157,7 +219,8 @@ public class EditMeetingActivity extends Activity implements OnClickListener {
 			mDate.set(year, monthOfYear, dayOfMonth);
 
 			int flags = DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_WEEKDAY;
-			String dateLabel = DateUtils.formatDateTime(EditMeetingActivity.this, mDate.getTimeInMillis(), flags);
+			String dateLabel = DateUtils.formatDateTime(EditMeetingActivity.this, mDate.getTimeInMillis(),
+					flags);
 			mDateSelBtn.setText(dateLabel);
 		}
 	};
@@ -170,7 +233,8 @@ public class EditMeetingActivity extends Activity implements OnClickListener {
 			mDate.set(Calendar.HOUR_OF_DAY, hourOfDay);
 			mDate.set(Calendar.MINUTE, minute);
 
-			String dateLabel = DateUtils.formatDateTime(EditMeetingActivity.this, mDate.getTimeInMillis(), DateUtils.FORMAT_SHOW_TIME);
+			String dateLabel = DateUtils.formatDateTime(EditMeetingActivity.this, mDate.getTimeInMillis(),
+					DateUtils.FORMAT_SHOW_TIME);
 			mTimeSelBtn.setText(dateLabel);
 		}
 	};
@@ -181,19 +245,20 @@ public class EditMeetingActivity extends Activity implements OnClickListener {
 		final int menuId = item.getItemId();
 		switch (menuId) {
 			case R.id.menu_finish:
+				freezeWidget();
+				
 				mOrigMeet = generateMeet();
 				setupMeetRemind(mOrigMeet);
 				invalidateOptionsMenu();
 				break;
 			case R.id.menu_share:
 				String path = MeetUtil.genMeetFile(mOrigMeet);
-				Log.v(TAG, "path=" + path);
-				
 				sendToWeixin(path);
-				
+
 				break;
 			case R.id.menu_delete:
-				MeetUtil.readMeetFromFile("/sdcard/test.met");
+				deleteMeet();
+				//MeetUtil.readMeetFromFile("/sdcard/test.met");
 				break;
 			default:
 				break;
@@ -201,28 +266,45 @@ public class EditMeetingActivity extends Activity implements OnClickListener {
 		return super.onOptionsItemSelected(item);
 	}
 
-	
-	private void sendToWeixin(String path){
-		final WXFileObject appdata = new WXFileObject();
+	private void deleteMeet() {
+		// TODO Auto-generated method stub
+		ContentResolver cr = getContentResolver();
+		cr.delete(mOrigMeet.dbUri, null, null);
 		
+		finish();
+	}
+
+	private void freezeWidget() {
+		// TODO Auto-generated method stub
+		mTopic.setEnabled(false);
+		mLocation.setEnabled(false);
+		mDateSelBtn.setEnabled(false);
+		mTimeSelBtn.setEnabled(false);
+		mRemindSpin.setEnabled(false);
+	}
+
+	private void sendToWeixin(String path) {
+		Log.v(TAG, "file path=" + path);
+		final WXFileObject appdata = new WXFileObject();
+
 		appdata.filePath = path;
 		appdata.fileData = Util.readFromFile(path, 0, -1);
-		//appdata.extInfo = "this is ext info";
-
+		// appdata.extInfo = "this is ext info";
+		
 		final WXMediaMessage msg = new WXMediaMessage();
 		msg.setThumbImage(Util.extractThumbNail(path, 150, 150, true));
 		msg.title = path;
 		msg.description = "Meeting Request";
 		msg.mediaObject = appdata;
-		
+
 		SendMessageToWX.Req req = new SendMessageToWX.Req();
 		req.transaction = Util.buildTransaction("appdata");
 		req.message = msg;
 		req.scene = /*isTimelineCb.isChecked() ? SendMessageToWX.Req.WXSceneTimeline : */SendMessageToWX.Req.WXSceneSession;
-		
+
 		mWXapi.sendReq(req);
-		
 	}
+
 	private static int[] PRE_REMIND_MINUTE = new int[] {15, 30};
 
 	private Meet generateMeet() {
@@ -271,5 +353,17 @@ public class EditMeetingActivity extends Activity implements OnClickListener {
 		AlarmManager alm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 		alm.setExact(AlarmManager.RTC, triggerTime, pi);
 	}
-    
+
+	
+	public int findLocation(String location){
+		 String [] addrs = getResources().getStringArray(R.array.meeting_rooms);
+		 
+		 for(int i=0; i<addrs.length; ++i){
+			 if(addrs[i].equals(location)){
+				 return i;
+			 }
+		 }
+		 return 0;
+	}
+	
 }

@@ -56,7 +56,6 @@ public class MeetRemindReceiver extends BroadcastReceiver{
 				meet.dateMillis = cs.getLong(2);
 				
 				showRemind(ctx,meet);
-
 			}
 			
 			cs.close();
@@ -64,7 +63,7 @@ public class MeetRemindReceiver extends BroadcastReceiver{
 		
 	}
 	
-	public static  void showRemind(Context ctx , Meet meet){
+	public void showRemind(Context ctx , Meet meet){
 		View panel = View.inflate(ctx, R.layout.meet_remind_lyt,null);
 		
 		TextView tvTopic = (TextView) panel.findViewById(R.id.topic);

@@ -25,11 +25,14 @@
 	
 	
     <string name="agenda_list">当前日期没有会议</string>
-    <string name="create_meet">新建会议</string>
     <string name="done">完成并邀请与会者</string>
     <string name="cancel">放弃</string>
     
     <string name="share">分享</string>
+    <string name="meeting_request">会议邀请</string>
+    <string name="meeting_create">新建会议</string>
+    
+    <string name="meet_req_failed">会议接收失败</string>
     
     <string name="format_month">%1$d月</string>
     <string name="format_year">%1$d年</string>
@@ -40,6 +43,7 @@
     
     <string name="meet_remind">会议提醒</string>
     <string name="remind_ok">知道了</string>
+    
     
     <string name="label_topic">主题</string>
     <string name="label_location">地点</string>
