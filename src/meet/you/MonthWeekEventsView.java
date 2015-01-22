@@ -658,12 +658,15 @@ public class MonthWeekEventsView extends SimpleWeekView {
     private void drawClick(Canvas canvas) {
         if (mClickedDayIndex != -1) {
             int alpha = p.getAlpha();
+            
             p.setColor(mClickedDayColor);
             p.setAlpha(mClickedAlpha);
+            
             r.left = computeDayLeftPosition(mClickedDayIndex);
             r.right = computeDayLeftPosition(mClickedDayIndex + 1);
             r.top = DAY_SEPARATOR_INNER_WIDTH;
             r.bottom = mHeight;
+            
             canvas.drawRect(r, p);
             p.setAlpha(alpha);
         }
