@@ -144,13 +144,8 @@ public class EditMeetingActivity extends Activity implements OnClickListener {
 		int pos = findLocation(meetReq.location);
 		mLocation.setSelection(pos);
 		mLocation.setEnabled(false);
-
 		
-		
-
-		} else {
-			setTitle(R.string.meeting_request);
-		}
+		setTitle(R.string.meeting_request);
 	}
 
 	private void showFailDlg() {

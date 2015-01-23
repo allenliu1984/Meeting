@@ -188,11 +188,9 @@ public class MainActivity extends Activity implements EventHandler, OnClickListe
 		// TODO create new event with a specific time
 		Integer recId = (Integer)view.getTag();
 		
-		
 		Uri uri = ContentUris.withAppendedId(MeetData.URI_ID,recId.intValue());
 		Intent viewMeet = new Intent(MeetData.ACTION_MEET_VIEW);
 		viewMeet.setData(uri);
-		
 		viewMeet.setClass(this, EditMeetingActivity.class);
 		
 		startActivity(viewMeet);
