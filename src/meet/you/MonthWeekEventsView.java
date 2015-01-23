@@ -538,12 +538,15 @@ public class MonthWeekEventsView extends SimpleWeekView {
 
     @Override
     protected void onDraw(Canvas canvas) {
+    	
         drawBackground(canvas);
         drawWeekNums(canvas);
         drawDaySeparators(canvas);
+        
         if (mHasToday && mAnimateToday) {
             drawToday(canvas);
         }
+        
         if (mShowDetailsInMonth) {
             drawEvents(canvas);
         } else {
@@ -552,6 +555,7 @@ public class MonthWeekEventsView extends SimpleWeekView {
             }
             drawDNA(canvas);
         }
+        
         drawClick(canvas);
     }
 
@@ -571,6 +575,7 @@ public class MonthWeekEventsView extends SimpleWeekView {
     // TODO move into SimpleWeekView
     // Computes the x position for the left side of the given day
     private int computeDayLeftPosition(int day) {
+    	
         int effectiveWidth = mWidth;
         int x = 0;
         int xOffset = 0;
@@ -578,8 +583,17 @@ public class MonthWeekEventsView extends SimpleWeekView {
             xOffset = SPACING_WEEK_NUMBER + mPadding;
             effectiveWidth -= xOffset;
         }
+        
         x = day * effectiveWidth / mNumDays + xOffset;
         return x;
+    }
+    
+    private int getOffsetByText(String text,Paint paint){
+    	int textWidth = (int) paint.measureText(text);
+    	int dayWidth = mWidth / mNumDays;
+    	
+    	return (dayWidth - textWidth ) / 2;
+    	
     }
 
     @Override
@@ -598,6 +612,7 @@ public class MonthWeekEventsView extends SimpleWeekView {
             lines[i++] = mHeight;
             wkNumOffset++;
         }
+        
         count += 4;
         lines[i++] = 0;
         lines[i++] = 0;
@@ -658,12 +673,15 @@ public class MonthWeekEventsView extends SimpleWeekView {
     private void drawClick(Canvas canvas) {
         if (mClickedDayIndex != -1) {
             int alpha = p.getAlpha();
+            
             p.setColor(mClickedDayColor);
             p.setAlpha(mClickedAlpha);
+            
             r.left = computeDayLeftPosition(mClickedDayIndex);
             r.right = computeDayLeftPosition(mClickedDayIndex + 1);
             r.top = DAY_SEPARATOR_INNER_WIDTH;
             r.bottom = mHeight;
+            
             canvas.drawRect(r, p);
             p.setAlpha(alpha);
         }
@@ -678,9 +696,12 @@ public class MonthWeekEventsView extends SimpleWeekView {
         int todayIndex = mTodayIndex;
         int x = 0;
         int numCount = mNumDays;
+        
         if (mShowWeekNum) {
-            x = SIDE_PADDING_WEEK_NUMBER + mPadding;
+            
+        	x = SIDE_PADDING_WEEK_NUMBER + mPadding;
             y = mWeekNumAscentHeight + TOP_PADDING_WEEK_NUMBER;
+            
             canvas.drawText(mDayNumbers[0], x, y, mWeekNumPaint);
             numCount++;
             i++;
@@ -689,8 +710,11 @@ public class MonthWeekEventsView extends SimpleWeekView {
 
         }
 
-        y = mMonthNumAscentHeight + TOP_PADDING_MONTH_NUMBER;
-
+        
+        // add by allen liu
+        //y = mMonthNumAscentHeight + TOP_PADDING_MONTH_NUMBER;
+        y = (mHeight - mMonthNumHeight) / 2 + mMonthNumAscentHeight ;
+        
         boolean isFocusMonth = mFocusDay[i];
         boolean isBold = false;
         mMonthNumPaint.setColor(isFocusMonth ? mMonthNumColor : mMonthNumOtherColor);
@@ -707,7 +731,11 @@ public class MonthWeekEventsView extends SimpleWeekView {
                 isFocusMonth = mFocusDay[i];
                 mMonthNumPaint.setColor(isFocusMonth ? mMonthNumColor : mMonthNumOtherColor);
             }
-            x = computeDayLeftPosition(i - offset) - (SIDE_PADDING_MONTH_NUMBER);
+            
+            // add by allen liu
+            //x = computeDayLeftPosition(i - offset) - (SIDE_PADDING_MONTH_NUMBER);
+            x = computeDayLeftPosition(i - offset) - getOffsetByText(mDayNumbers[i],mMonthNumPaint);
+            
             canvas.drawText(mDayNumbers[i], x, y, mMonthNumPaint);
             if (isBold) {
                 mMonthNumPaint.setFakeBoldText(isBold = false);

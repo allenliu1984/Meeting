@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 
-import meet.you.R;
 import meet.you.data.MeetData.Meet;
 import meet.you.data.MeetData.XmlItem;
 
@@ -13,7 +12,6 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlSerializer;
 
-import android.content.res.Resources;
 import android.os.Environment;
 import android.util.Log;
 import android.util.Xml;

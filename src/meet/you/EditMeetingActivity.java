@@ -22,6 +22,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -268,13 +270,12 @@ public class EditMeetingActivity extends Activity implements OnClickListener {
 				invalidateOptionsMenu();
 				break;
 			case R.id.menu_share:
-				String path = MeetUtil.genMeetFile(mOrigMeet);
-				sendToWeixin(path);
+				
+				sendToWeixin(mOrigMeet);
 
 				break;
 			case R.id.menu_delete:
 				deleteMeet();
-				//MeetUtil.readMeetFromFile("/sdcard/test.met");
 				break;
 			default:
 				break;
@@ -299,18 +300,25 @@ public class EditMeetingActivity extends Activity implements OnClickListener {
 		mRemindSpin.setEnabled(false);
 	}
 
-	private void sendToWeixin(String path) {
+	private void sendToWeixin(Meet meet) {
+		
+		String path = MeetUtil.genMeetFile(meet);
+		
 		Log.v(TAG, "file path=" + path);
 		final WXFileObject appdata = new WXFileObject();
 
 		appdata.filePath = path;
 		appdata.fileData = Util.readFromFile(path, 0, -1);
-		// appdata.extInfo = "this is ext info";
 		
 		final WXMediaMessage msg = new WXMediaMessage();
-		msg.setThumbImage(Util.extractThumbNail(path, 150, 150, true));
-		msg.title = path;
-		msg.description = "Meeting Request";
+		
+		Bitmap icon = BitmapFactory.decodeResource(getResources(),R.drawable.ic_launcher);
+		msg.setThumbImage(icon);
+		
+		String time = 	DateUtils.formatDateTime(EditMeetingActivity.this, meet.dateMillis,DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE);
+		msg.title = meet.topic + "\n" + time + " " + meet.location;
+		
+		msg.description = getResources().getString(R.string.meeting_request);
 		msg.mediaObject = appdata;
 
 		SendMessageToWX.Req req = new SendMessageToWX.Req();

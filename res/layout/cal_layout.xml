@@ -15,19 +15,20 @@
         android:layout_below="@id/cal_frame" >
 
         <ListView
-            android:layout_marginTop="15dp]"
             android:id="@+id/meet_list"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp" />
 
         <TextView
+            android:id="@+id/no_meet_promp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
             android:text="@string/agenda_list" />
     </FrameLayout>
 
-    <!-- 
+    <!--
     <GridView
         android:id="@+id/hour_grid"
         android:layout_width="match_parent"
@@ -39,8 +40,7 @@
         android:padding="10dp"
         android:stretchMode="columnWidth"
         android:verticalSpacing="10dp" />
-    
-     -->
+    -->
     <!--
     <Button
         android:id="@+id/create"

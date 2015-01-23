@@ -441,6 +441,7 @@ public class SimpleWeekView extends View {
 
         int i = 0;
         int divisor = 2 * nDays;
+        
         if (mShowWeekNum) {
             p.setTextSize(MINI_WK_NUMBER_TEXT_SIZE);
             p.setStyle(Style.FILL);
@@ -455,17 +456,23 @@ public class SimpleWeekView extends View {
         boolean isFocusMonth = mFocusDay[i];
         mMonthNumPaint.setColor(isFocusMonth ? mFocusMonthColor : mOtherMonthColor);
         mMonthNumPaint.setFakeBoldText(false);
+        
         for (; i < nDays; i++) {
+        	
             if (mFocusDay[i] != isFocusMonth) {
                 isFocusMonth = mFocusDay[i];
                 mMonthNumPaint.setColor(isFocusMonth ? mFocusMonthColor : mOtherMonthColor);
             }
+            
             if (mHasToday && mToday == i) {
                 mMonthNumPaint.setTextSize(MINI_TODAY_NUMBER_TEXT_SIZE);
                 mMonthNumPaint.setFakeBoldText(true);
             }
+            
             int x = (2 * i + 1) * (mWidth - mPadding * 2) / (divisor) + mPadding;
+            
             canvas.drawText(mDayNumbers[i], x, y, mMonthNumPaint);
+            
             if (mHasToday && mToday == i) {
                 mMonthNumPaint.setTextSize(MINI_DAY_NUMBER_TEXT_SIZE);
                 mMonthNumPaint.setFakeBoldText(false);

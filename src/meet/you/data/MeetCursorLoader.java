@@ -21,9 +21,9 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import android.content.Context;
+import android.content.CursorLoader;
 import android.database.Cursor;
 import android.net.Uri;
-import android.support.v4.content.CursorLoader;
 import android.text.format.Time;
 
 /**

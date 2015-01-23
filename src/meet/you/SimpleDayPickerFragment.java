@@ -235,12 +235,13 @@ public class SimpleDayPickerFragment extends ListFragment implements OnScrollLis
 
 		mMonthName = (TextView) getView().findViewById(R.id.month_name);
 		// add by allen liu
-		mYearName = (TextView) getView().findViewById(R.id.year_name);
+		// mYearName = (TextView) getView().findViewById(R.id.year_name);
 
 		SimpleWeekView child = (SimpleWeekView) mListView.getChildAt(0);
 		if (child == null) {
 			return;
 		}
+		
 		int julianDay = child.getFirstJulianDay();
 		mFirstVisibleDay.setJulianDay(julianDay);
 		// set the title to the month of the second week
@@ -574,18 +575,23 @@ public class SimpleDayPickerFragment extends ListFragment implements OnScrollLis
 		mMonthName.invalidate();
 		*/
 
+		int flags = DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_NO_MONTH_DAY | DateUtils.FORMAT_SHOW_YEAR;
+
+		String month = DateUtils.formatDateTime(mContext, time.toMillis(true), flags);
 		// add by allen liu
-		String month = String.format( getString(R.string.format_month), time.month);
-		
+		// String month = String.format( getString(R.string.format_month), time.month);
+
 		mMonthName.setText(month);
-		
+
+		/*
 		String year = String.format(getString(R.string.format_year), time.year);
 		mYearName.setText(year);
+		*/
 
 		if (!TextUtils.equals(oldMonth, mMonthName.getText())) {
 			mMonthName.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
 		}
-		
+
 		mCurrentMonthDisplayed = time.month;
 		if (updateHighlight) {
 			mAdapter.updateFocusMonth(mCurrentMonthDisplayed);
