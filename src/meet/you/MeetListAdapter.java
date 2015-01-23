@@ -47,6 +47,10 @@ public class MeetListAdapter extends CursorAdapter {
 		
 		tvDate.setText(time);
 		
+		//
+		int id = cursor.getInt(INDEX_ID);
+		panel.setTag(id);
+		
 	}
 
 }

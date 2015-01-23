@@ -5,6 +5,8 @@ import android.net.Uri;
 public interface MeetData {
 	
 	public static Uri URI = MeetProvider.CONTENT_URI;
+	public static Uri URI_ID = MeetProvider.CONTENT_URI_ID;
+	
 	
 	public static String KEY_ID = MeetProvider.ID;
 	public static String KEY_TOPIC = MeetProvider.KEY_TOPIC;
@@ -12,6 +14,8 @@ public interface MeetData {
 	public static String KEY_WHERE = MeetProvider.KEY_WHERE;
 	public static String KEY_PRE_TIME = MeetProvider.KEY_PRE_TIME;
 	
+	public static String ACTION_MEET_VIEW = "meet.action.VIEW";
+	public static String ACTION_MEET_EDIT = "meet.action.EDIT";
 	
 	public class Meet{
 		public String topic;

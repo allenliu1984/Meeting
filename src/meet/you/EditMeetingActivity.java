@@ -76,11 +76,6 @@ public class EditMeetingActivity extends Activity implements OnClickListener {
 		mTopic = (EditText) findViewById(R.id.topic);
 		mTopic.selectAll();
 
-		/*
-		InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-		imm.viewClicked(mTopic);
-		*/
-		
 		mLocation = (Spinner) findViewById(R.id.location);
 		mLocation.setSelection(0);
 
@@ -93,15 +88,31 @@ public class EditMeetingActivity extends Activity implements OnClickListener {
 		mRemindSpin = (Spinner) findViewById(R.id.remind_time);
 		mRemindSpin.setSelection(0);
 
-		Uri data = getIntent().getData();
-		if (data != null) {
-			initByUri(data);
+		String action = getIntent().getAction();
+		if(MeetData.ACTION_MEET_VIEW.equals(action)){
+			//may be we should check pre-remind minute,any way,no one cares,set it as default
+			Uri data = getIntent().getData();
+			initByMeetRecord(data);
 		} else {
-			initDefault();
+			Uri data = getIntent().getData();
+			if (data != null) {
+				initByMeetFile(data);
+			} else {
+				initDefault();
+			}
 		}
 	}
 
-	private void initByUri(Uri data) {
+	private void initByMeetRecord(Uri uri) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/**
+	 * if has data,it may be in edit or view mode
+	 * @param data
+	 */
+	private void initByMeetFile(Uri data) {
 		Meet meetReq = MeetUtil.readMeetFromFile(data.getPath());
 
 		if (meetReq == null) {
@@ -132,7 +143,12 @@ public class EditMeetingActivity extends Activity implements OnClickListener {
 		mLocation.setSelection(pos);
 		mLocation.setEnabled(false);
 
-		setTitle(R.string.meeting_request);
+		
+		
+
+		} else {
+			setTitle(R.string.meeting_request);
+		}
 	}
 
 	private void showFailDlg() {

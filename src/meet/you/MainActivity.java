@@ -13,8 +13,10 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -182,9 +184,18 @@ public class MainActivity extends Activity implements EventHandler,
 	}
 
 	@Override
-	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+	public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
 		// TODO create new event with a specific time
-
+		Integer recId = (Integer)view.getTag();
+		
+		
+		Uri uri = ContentUris.withAppendedId(MeetData.URI_ID,recId.intValue());
+		Intent viewMeet = new Intent(MeetData.ACTION_MEET_VIEW);
+		viewMeet.setData(uri);
+		
+		viewMeet.setClass(this, EditMeetingActivity.class);
+		
+		startActivity(viewMeet);
 	}
 
 	private void showFocusDateMeet(Time focusTime) {

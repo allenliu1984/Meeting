@@ -31,6 +31,7 @@
     <string name="share">分享</string>
     <string name="meeting_request">会议邀请</string>
     <string name="meeting_create">新建会议</string>
+    <string name="meeting_detail">会议详情</string>
     
     <string name="meet_req_failed">会议接收失败</string>
     
@@ -51,5 +52,6 @@
     <string name="meet_topic">开会</string>
     <string name="meet_loc">公司</string>
     <string name="meet_remind_time">15分钟前</string>
+    
     
 </resources>
