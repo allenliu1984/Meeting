@@ -163,7 +163,11 @@ public class EditMeetingActivity extends Activity implements OnClickListener {
 	}
 
 	private void initDefault() {
+		
+		long now = getIntent().getLongExtra(MeetData.EXTRA_FOCUS_DATE, System.currentTimeMillis());
+		
 		mDate = new GregorianCalendar();
+		mDate.setTimeInMillis(now);
 		mDate.set(Calendar.MINUTE, 0);
 
 		int flags = DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_WEEKDAY;

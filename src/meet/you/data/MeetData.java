@@ -17,6 +17,8 @@ public interface MeetData {
 	public static String ACTION_MEET_VIEW = "meet.action.VIEW";
 	public static String ACTION_MEET_EDIT = "meet.action.EDIT";
 	
+	public static  String EXTRA_FOCUS_DATE = "focus_day";
+	
 	public class Meet{
 		public String topic;
 		public String location;

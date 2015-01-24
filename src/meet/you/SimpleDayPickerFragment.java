@@ -313,7 +313,11 @@ public class SimpleDayPickerFragment extends ListFragment implements OnScrollLis
 		mShowWeekNumber = false;
 
 		updateHeader();
-		goTo(mSelectedDay.toMillis(true), false, false, false);
+		
+		//goTo(mSelectedDay.toMillis(true), false, false, false);
+		
+		goTo(mSelectedDay.toMillis(true), false, true, false);
+		
 		mAdapter.setSelectedDay(mSelectedDay);
 		mTodayUpdater.run();
 	}

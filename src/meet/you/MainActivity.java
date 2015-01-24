@@ -19,6 +19,7 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.format.DateUtils;
 import android.text.format.Time;
 import android.util.Log;
 import android.view.Menu;
@@ -67,6 +68,7 @@ public class MainActivity extends Activity implements EventHandler, OnClickListe
 		setContentView(R.layout.cal_layout);
 
 		mMeetList = (ListView) findViewById(R.id.meet_list);
+		mMeetList.setOnItemClickListener(this);
 		mNoMeet = (TextView) findViewById(R.id.no_meet_promp);
 		
 		final long today = System.currentTimeMillis();
@@ -95,8 +97,12 @@ public class MainActivity extends Activity implements EventHandler, OnClickListe
 		
 		long selectTime = ((MonthByWeekFragment)mMonthFragment).getSelectedTime();
 		Bundle bundle = new Bundle();
-		bundle.putLong(EXTRA_FOCUS_DATE, selectTime);
+		bundle.putLong(MeetData.EXTRA_FOCUS_DATE, selectTime);
 
+		int flags = DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_WEEKDAY;
+		String dateLabel = DateUtils.formatDateTime(this, selectTime, flags);
+
+		Log.v(TAG, dateLabel);
 		getLoaderManager().restartLoader(LOADER_FOCUS_DAY_MEET, bundle, this);
 	}
 	
@@ -107,8 +113,13 @@ public class MainActivity extends Activity implements EventHandler, OnClickListe
 		final int menuId = item.getItemId();
 		switch (menuId) {
 			case R.id.menu_create:
+				
 				Intent createMeet = new Intent();
+				
+				long selectTime = ((MonthByWeekFragment)mMonthFragment).getSelectedTime();
+				createMeet.putExtra(MeetData.EXTRA_FOCUS_DATE, selectTime);
 				createMeet.setClass(this, EditMeetingActivity.class);
+				
 				startActivity(createMeet);
 
 				break;
@@ -140,17 +151,9 @@ public class MainActivity extends Activity implements EventHandler, OnClickListe
 
 				long timeMillis = event.startTime.toMillis(true);
 				Bundle bundle = new Bundle();
-				bundle.putLong(EXTRA_FOCUS_DATE, timeMillis);
+				bundle.putLong(MeetData.EXTRA_FOCUS_DATE, timeMillis);
 
 				getLoaderManager().restartLoader(LOADER_FOCUS_DAY_MEET, bundle, this);
-
-				/*
-				showFocusDateMeet(event.startTime);
-				String timeLabel = DateUtils.formatDateTime(this, timeMillis,
-						DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME);
-
-				Log.v(TAG, timeLabel);
-				*/
 
 				break;
 			case EventType.VIEW_EVENT:
@@ -251,14 +254,14 @@ public class MainActivity extends Activity implements EventHandler, OnClickListe
 	}
 
 	private final int LOADER_FOCUS_DAY_MEET = 0;
-	private String EXTRA_FOCUS_DATE = "focus_day";
+	
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle data) {
 		// TODO Auto-generated method stub
 		switch (id) {
 			case LOADER_FOCUS_DAY_MEET:
-				long day = data.getLong(EXTRA_FOCUS_DATE);
+				long day = data.getLong(MeetData.EXTRA_FOCUS_DATE);
 				return new MeetCursorLoader(this, day, MeetListAdapter.DATA_COL);
 
 			default:
