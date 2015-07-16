@@ -24,6 +24,7 @@ import java.util.Locale;
 import android.app.Activity;
 import android.app.ListFragment;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.database.DataSetObserver;
 import android.os.Bundle;
@@ -42,6 +43,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import meet.you.R;
+import meet.you.data.MeetData;
+import meet.you.wxapi.WXEntryActivity;
 
 /**
  * <p>
@@ -124,6 +127,9 @@ public class SimpleDayPickerFragment extends ListFragment implements OnScrollLis
 	protected int mPreviousScrollState = OnScrollListener.SCROLL_STATE_IDLE;
 	// used for tracking what state listview is in
 	protected int mCurrentScrollState = OnScrollListener.SCROLL_STATE_IDLE;
+	
+	//add by yvan,for twice click
+	private String mLastSelectedDay="aaa";
 
 	// This causes an update of the view at midnight
 	protected Runnable mTodayUpdater = new Runnable() {
@@ -178,7 +184,7 @@ public class SimpleDayPickerFragment extends ListFragment implements OnScrollLis
 		mFirstVisibleDay.timezone = tz;
 		mFirstVisibleDay.normalize(true);
 		mTempTime.timezone = tz;
-
+		
 		Resources res = activity.getResources();
 		mSaturdayColor = res.getColor(R.color.month_saturday);
 		mSundayColor = res.getColor(R.color.month_sunday);
@@ -287,6 +293,7 @@ public class SimpleDayPickerFragment extends ListFragment implements OnScrollLis
 	@Override
 	public void onResume() {
 		super.onResume();
+		mLastSelectedDay="aaa";
 		setUpAdapter();
 		doResumeUpdates();
 	}
@@ -397,6 +404,20 @@ public class SimpleDayPickerFragment extends ListFragment implements OnScrollLis
 		if (setSelected) {
 			mSelectedDay.set(time);
 			mSelectedDay.normalize(true);
+			
+			int flags = DateUtils.FORMAT_SHOW_DATE
+					| DateUtils.FORMAT_SHOW_WEEKDAY;
+			String selectedDay = DateUtils.formatDateTime(mContext,
+					getSelectedTime(), flags);
+
+			if (mLastSelectedDay.equals(selectedDay)) {
+				Intent createMeet = new Intent();	
+				createMeet.putExtra(MeetData.EXTRA_FOCUS_DATE, getSelectedTime());
+				createMeet.setClass(getActivity(), WXEntryActivity.class);
+				startActivity(createMeet);
+			}
+			mLastSelectedDay=selectedDay;
+			
 		}
 
 		// If this view isn't returned yet we won't be able to load the lists

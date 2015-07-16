@@ -160,10 +160,11 @@ public class SimpleWeeksAdapter extends BaseAdapter implements OnTouchListener {
      * @param selectedTime The time to highlight
      */
     public void setSelectedDay(Time selectedTime) {
-        mSelectedDay.set(selectedTime);
-        long millis = mSelectedDay.normalize(true);
+         Time mSelectedDayTemp=new Time(); 
+         mSelectedDayTemp.set(selectedTime);
+        long millis = mSelectedDayTemp.normalize(true);
         mSelectedWeek = getWeeksSinceEpochFromJulianDay(
-                Time.getJulianDay(millis, mSelectedDay.gmtoff), mFirstDayOfWeek);
+                Time.getJulianDay(millis, mSelectedDayTemp.gmtoff), mFirstDayOfWeek);
         notifyDataSetChanged();
     }
     

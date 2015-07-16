@@ -1,23 +1,4 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
-    <item
-        android:id="@+id/menu_finish"
-        android:orderInCategory="100"
-        android:showAsAction="always"
-        android:title="@string/menu_finish"/>
-    
-    <item
-        android:id="@+id/menu_delete"
-        android:orderInCategory="100"
-        android:showAsAction="always"
-        android:icon="@android:drawable/ic_menu_delete"
-        android:title="@string/menu_delete"/>
-    
-    <item
-        android:id="@+id/menu_share"
-        android:orderInCategory="100"
-        android:showAsAction="always"
-        android:icon="@android:drawable/ic_menu_share"
-        android:title="@string/menu_share"/>
 
 </menu>

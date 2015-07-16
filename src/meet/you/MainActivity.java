@@ -3,25 +3,40 @@ package meet.you;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
+import org.json.JSONObject;
+
+import com.tencent.tauth.IUiListener;
+import com.tencent.tauth.Tencent;
+import com.tencent.tauth.UiError;
+
 import meet.you.CalendarController.EventHandler;
 import meet.you.CalendarController.EventInfo;
 import meet.you.CalendarController.EventType;
 import meet.you.data.MeetCursorLoader;
 import meet.you.data.MeetData;
+import meet.you.wxapi.WXEntryActivity;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.app.LoaderManager;
 import android.content.ContentResolver;
 import android.content.ContentUris;
+import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.database.Cursor;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.text.format.DateUtils;
 import android.text.format.Time;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -31,10 +46,13 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.GridView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
-public class MainActivity extends Activity implements EventHandler, OnClickListener, OnItemClickListener,
+public class MainActivity extends Activity implements EventHandler,
+		OnClickListener, OnItemClickListener,
 		LoaderManager.LoaderCallbacks<Cursor> {
 
 	private CalendarController mController;
@@ -45,57 +63,113 @@ public class MainActivity extends Activity implements EventHandler, OnClickListe
 	private long mTime;
 	private long mEventID;
 	boolean mEventView;
+	Boolean floatWhether;
 
+	private final String TAG = "MA";
 	// add by allen liu
 	private Button mCreateBtn;
 	private GridView mHourGrid;
 
-	private final String TAG = "MA";
-
 	private ListView mMeetList;
 	private TextView mNoMeet;
+
+	Bundle shareParams = null;
+	private Tencent mTencent;
+	private static final String APP_ID = "1104561257";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
+//		getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
 
 		new ImportEntries().execute(this);
 
 		mController = CalendarController.getInstance(this);
 
 		setContentView(R.layout.cal_layout);
+		
+		ActionBar actionBar=getActionBar();
+		actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+		actionBar.setDisplayShowCustomEnabled(true); 
+		LayoutInflater inflator = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+	            View mView = inflator.inflate(R.layout.action_bar, null);
+		
+		actionBar.setCustomView(mView);
+		
+		mView.findViewById(R.id.addBtn).setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				Intent createMeet = new Intent();
+				long selectTime = ((MonthByWeekFragment) mMonthFragment)
+						.getSelectedTime();
+				createMeet.putExtra(MeetData.EXTRA_FOCUS_DATE, selectTime);
+				createMeet.setClass(MainActivity.this, WXEntryActivity.class);
+				startActivity(createMeet);
+			}
+		});
+		
+		mView.findViewById(R.id.settingBtn).setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				Intent intent=new Intent(MainActivity.this, SetUp.class);
+				startActivity(intent);
+			}
+		});
 
 		mMeetList = (ListView) findViewById(R.id.meet_list);
 		mMeetList.setOnItemClickListener(this);
 		mNoMeet = (TextView) findViewById(R.id.no_meet_promp);
-		
+
 		final long today = System.currentTimeMillis();
-		
+
 		mMonthFragment = new MonthByWeekFragment(today, false);
 
 		FragmentTransaction ft = getFragmentManager().beginTransaction();
 		ft.replace(R.id.cal_frame, mMonthFragment).commit();
 
-		mController.registerEventHandler(R.id.cal_frame, (EventHandler) mMonthFragment);
+		mController.registerEventHandler(R.id.cal_frame,
+				(EventHandler) mMonthFragment);
 		mController.registerFirstEventHandler(0, this);
+
+		final Context ctxContext = this.getApplicationContext();
+		mTencent = Tencent.createInstance(APP_ID, ctxContext);
+
+		SharedPreferences sharedPreferences = getSharedPreferences(SetUp.FloatWindow,
+				Activity.MODE_PRIVATE);
+		floatWhether = sharedPreferences.getBoolean(SetUp.FloatWindow, true);
+		if (floatWhether) {
+			Log.i("dududu", "启动悬浮");
+			floatWindow();
+		}else{
+			Intent intent=new Intent(MainActivity.this, FxService.class);
+			stopService(intent);
+			Log.i("dududu", "关闭悬浮");
+		}
+
+	
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
+		// Inflate the menu; this adds items to the action bar
+		// if it is present.
 		getMenuInflater().inflate(R.menu.entry_menu, menu);
 
 		return true;
 	}
-	
+
 	@Override
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
-		
-		long selectTime = ((MonthByWeekFragment)mMonthFragment).getSelectedTime();
+
+		long selectTime = ((SimpleDayPickerFragment) mMonthFragment)
+				.getSelectedTime();
 		Bundle bundle = new Bundle();
 		bundle.putLong(MeetData.EXTRA_FOCUS_DATE, selectTime);
 
@@ -104,28 +178,23 @@ public class MainActivity extends Activity implements EventHandler, OnClickListe
 
 		Log.v(TAG, dateLabel);
 		getLoaderManager().restartLoader(LOADER_FOCUS_DAY_MEET, bundle, this);
+		
+		SharedPreferences sharedPreferences = getSharedPreferences(SetUp.FloatWindow,
+				Activity.MODE_PRIVATE);
+		floatWhether = sharedPreferences.getBoolean(SetUp.FloatWindow, true);
+		if (floatWhether) {
+			Log.i("dududu", "启动悬浮");
+			floatWindow();
+		}else{
+			Intent intent=new Intent(MainActivity.this, FxService.class);
+			stopService(intent);
+			Log.i("dududu", "关闭悬浮");
+		}
 	}
-	
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// TODO Auto-generated method stub
-		final int menuId = item.getItemId();
-		switch (menuId) {
-			case R.id.menu_create:
-				
-				Intent createMeet = new Intent();
-				
-				long selectTime = ((MonthByWeekFragment)mMonthFragment).getSelectedTime();
-				createMeet.putExtra(MeetData.EXTRA_FOCUS_DATE, selectTime);
-				createMeet.setClass(this, EditMeetingActivity.class);
-				
-				startActivity(createMeet);
-
-				break;
-			default:
-				break;
-		}
 		return super.onOptionsItemSelected(item);
 	}
 
@@ -139,33 +208,37 @@ public class MainActivity extends Activity implements EventHandler, OnClickListe
 
 		final int type = event.eventType;
 		switch (type) {
-			case EventType.GO_TO:
-				
-				/*
-				 * mEvent = event; mDayView = true; FragmentTransaction ft =
-				 * getFragmentManager().beginTransaction(); mDayFragment = new
-				 * DayFragment(event.startTime.toMillis(true), 1);
-				 * ft.replace(R.id.cal_frame,
-				 * mDayFragment).addToBackStack(null).commit();
-				 */
+		case EventType.GO_TO:
 
-				long timeMillis = event.startTime.toMillis(true);
-				Bundle bundle = new Bundle();
-				bundle.putLong(MeetData.EXTRA_FOCUS_DATE, timeMillis);
+			/*
+			 * mEvent = event; mDayView = true; FragmentTransaction ft =
+			 * getFragmentManager().beginTransaction(); mDayFragment = new
+			 * DayFragment(event.startTime .toMillis(true), 1);
+			 * ft.replace(R.id.cal_frame, mDayFragment).addToBackStack
+			 * (null).commit();
+			 */
 
-				getLoaderManager().restartLoader(LOADER_FOCUS_DAY_MEET, bundle, this);
+			long timeMillis = event.startTime.toMillis(true);
+			Bundle bundle = new Bundle();
+			bundle.putLong(MeetData.EXTRA_FOCUS_DATE, timeMillis);
 
-				break;
-			case EventType.VIEW_EVENT:
-				mDayView = false;
-				mEventView = true;
-				this.mEvent = event;
-				// FragmentTransaction ft = getFragmentManager().beginTransaction();
-				// edit = new EditEvent(event.id);
-				// ft.replace(R.id.cal_frame, edit).addToBackStack(null).commit();
-				break;
-			default:
-				break;
+			getLoaderManager().restartLoader(LOADER_FOCUS_DAY_MEET, bundle,
+					this);
+
+			break;
+		case EventType.VIEW_EVENT:
+			mDayView = false;
+			mEventView = true;
+			this.mEvent = event;
+			floatWindow();
+			// FragmentTransaction ft =
+			// getFragmentManager().beginTransaction();
+			// edit = new EditEvent(event.id);
+			// ft.replace(R.id.cal_frame,
+			// edit).addToBackStack(null).commit();
+			break;
+		default:
+			break;
 		}
 
 	}
@@ -178,7 +251,7 @@ public class MainActivity extends Activity implements EventHandler, OnClickListe
 	@Override
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
-		final int id = v.getId();
+//		final int id = v.getId();
 		/*
 		 * switch(id){ case R.id.create: Intent createMeet = new Intent();
 		 * createMeet.setClass(this, EditMeetingActivity.class);
@@ -189,20 +262,20 @@ public class MainActivity extends Activity implements EventHandler, OnClickListe
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
 		// TODO create new event with a specific time
-		Integer recId = (Integer)view.getTag();
-		
-		Uri uri = ContentUris.withAppendedId(MeetData.URI_ID,recId.intValue());
+		Integer recId = (Integer) view.getTag();
+
+		Uri uri = ContentUris.withAppendedId(MeetData.URI_ID, recId.intValue());
 		Intent viewMeet = new Intent(MeetData.ACTION_MEET_VIEW);
 		viewMeet.setData(uri);
-		viewMeet.setClass(this, EditMeetingActivity.class);
-		
+		viewMeet.setClass(this, WXEntryActivity.class);
+
 		startActivity(viewMeet);
 	}
 
 	private void showFocusDateMeet(Time focusTime) {
 
-		GregorianCalendar focusDate = new GregorianCalendar(focusTime.year, focusTime.month,
-				focusTime.monthDay);
+		GregorianCalendar focusDate = new GregorianCalendar(focusTime.year,
+				focusTime.month, focusTime.monthDay);
 
 		long dayStart = focusDate.getTimeInMillis();
 
@@ -212,11 +285,15 @@ public class MainActivity extends Activity implements EventHandler, OnClickListe
 
 		ContentResolver cr = getContentResolver();
 
-		Cursor cs = cr.query(MeetData.URI, MeetListAdapter.DATA_COL,
+		Cursor cs = cr
+				.query(MeetData.URI,
+						MeetListAdapter.DATA_COL,
 
-		MeetData.KEY_WHEN + ">=? " + " AND " + MeetData.KEY_WHEN + "< ?",
+						MeetData.KEY_WHEN + ">=? " + " AND "
+								+ MeetData.KEY_WHEN + "< ?",
 
-		new String[] {String.valueOf(dayStart), String.valueOf(dayEnd)}, null);
+						new String[] { String.valueOf(dayStart),
+								String.valueOf(dayEnd) }, null);
 
 		if (cs != null) {
 
@@ -247,27 +324,26 @@ public class MainActivity extends Activity implements EventHandler, OnClickListe
 		super.onDestroy();
 
 		MeetListAdapter mla = (MeetListAdapter) mMeetList.getAdapter();
-		if(mla != null){
+		if (mla != null) {
 			mla.changeCursor(null);
 		}
-		
+
 	}
 
 	private final int LOADER_FOCUS_DAY_MEET = 0;
-	
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle data) {
 		// TODO Auto-generated method stub
 		switch (id) {
-			case LOADER_FOCUS_DAY_MEET:
-				long day = data.getLong(MeetData.EXTRA_FOCUS_DATE);
-				return new MeetCursorLoader(this, day, MeetListAdapter.DATA_COL);
+		case LOADER_FOCUS_DAY_MEET:
+			long day = data.getLong(MeetData.EXTRA_FOCUS_DATE);
+			return new MeetCursorLoader(this, day, MeetListAdapter.DATA_COL);
 
-			default:
-				break;
+		default:
+			break;
 		}
-		
+
 		return null;
 	}
 
@@ -276,32 +352,65 @@ public class MainActivity extends Activity implements EventHandler, OnClickListe
 		// TODO Auto-generated method stub
 		final int id = loader.getId();
 		switch (id) {
-			case LOADER_FOCUS_DAY_MEET:
-				if(cs != null && cs.getCount() > 0){
-					MeetListAdapter mla = (MeetListAdapter) mMeetList.getAdapter();
-					if(mla != null){
-						mla.changeCursor(cs);
-					} else {
-						mla = new MeetListAdapter(this, cs, false);
-						mMeetList.setAdapter(mla);
-					}
-					
-					mMeetList.setVisibility(View.VISIBLE);
-					mNoMeet.setVisibility(View.GONE);
+		case LOADER_FOCUS_DAY_MEET:
+			if (cs != null && cs.getCount() > 0) {
+				MeetListAdapter mla = (MeetListAdapter) mMeetList.getAdapter();
+				if (mla != null) {
+					mla.changeCursor(cs);
 				} else {
-					mMeetList.setVisibility(View.GONE);
-					mNoMeet.setVisibility(View.VISIBLE);
+					mla = new MeetListAdapter(this, cs, false);
+					mMeetList.setAdapter(mla);
 				}
-				
-				break;
-			default:
-				break;
+
+				mMeetList.setVisibility(View.VISIBLE);
+				mNoMeet.setVisibility(View.GONE);
+			} else {
+				mMeetList.setVisibility(View.GONE);
+				mNoMeet.setVisibility(View.VISIBLE);
+			}
+
+			break;
+		default:
+			break;
 		}
 	}
 
 	@Override
 	public void onLoaderReset(Loader<Cursor> loader) {
 		// TODO Auto-generated method stub
+
+	}
+
+	public void floatWindow() {
+		Time today = new Time();
+		today.setToNow();
+		long time = System.currentTimeMillis();
+		GregorianCalendar focusDate = new GregorianCalendar(today.year,
+				today.month, today.monthDay);
+		long dayStart = focusDate.getTimeInMillis();
+		focusDate.roll(Calendar.DAY_OF_MONTH, true);
+
+		long dayEnd = focusDate.getTimeInMillis();
+
+		ContentResolver cr = getContentResolver();
+
+		Cursor cs = cr
+				.query(MeetData.URI,
+						MeetListAdapter.DATA_COL,
+
+						MeetData.KEY_WHEN + ">=? " + " AND "
+								+ MeetData.KEY_WHEN + "< ?",
+
+						new String[] { String.valueOf(time),
+								String.valueOf(dayEnd) }, null);
 		
+		if (cs != null) {
+			
+			final int N = cs.getCount();
+			if (N > 0) {
+				Intent intent = new Intent(MainActivity.this, FxService.class);
+				startService(intent);
+			}
+		}
 	}
 }

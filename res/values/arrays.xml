@@ -20,16 +20,7 @@
         <item>15分钟前</item>
         <item>30分钟前</item>
     </string-array>
-
-    <string-array name="meeting_rooms">
-        <item>东海12楼</item>
-        <item>时代19楼</item>
-        <item>时代21楼</item>
-        <item>东海32楼</item>
-        <item>东海33楼</item>
-        <item>待定</item>
-        
-    </string-array>
+     
     
     <!--
          Choices for the "Reminder method" spinner.

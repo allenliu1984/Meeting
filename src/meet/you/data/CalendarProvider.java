@@ -14,6 +14,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
+import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
@@ -27,6 +28,11 @@ public class CalendarProvider extends ContentProvider {
 	public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/events");
 	public static final Uri CONTENT_ID_URI_BASE = Uri.parse("content://" + AUTHORITY + "/event/");
 	private static final UriMatcher uriMatcher;
+	
+	public  static final String DATABASE_ROOM_NAME = "locationDatabase";
+	public static final String TABLE_ROOM_NAME = "location";
+	public static final Uri CONTENT_ROOM_URI = Uri.parse("content://" + AUTHORITY + "/" + TABLE_ROOM_NAME);
+	public static final String KEY_WHERE = "meet_room";
 	
 	public static final String EVENT = "event";
 	public static final String LOCATION = "location";
@@ -76,7 +82,7 @@ public class CalendarProvider extends ContentProvider {
     				+ END_DAY + " INTEGER, " + START_TIME + " INTEGER, " + END_TIME+ " INTEGER, " + EVENT_ID + " INTEGER);");
     	}
     }
-
+    
 	@Override
 	public int delete(Uri uri, String selection, String[] selectionArgs) {
 		int count = 0;

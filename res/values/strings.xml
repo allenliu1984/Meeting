@@ -7,6 +7,8 @@
     <string name="menu_share">分享</string>
     <string name="menu_delete">删除</string>
     
+    <string name="add_location">添加</string>
+    
     <string name="agenda_today">TODAY, %1$s</string>
     <string name="agenda_yesterday">YESTERDAY, %1$s</string>
     <string name="agenda_tomorrow">TOMORROW, %1$s</string>
@@ -37,20 +39,29 @@
     <string name="format_month">%1$d月</string>
     <string name="format_year">%1$d年</string>
     
-    <string name="label_date">日期</string>
+    <string name="label_start_date">开始:</string>
+     <string name="label_end_date">结束:</string>
     <string name="label_time">时间</string>
-    <string name="label_remind">提醒</string>
+    <string name="label_remind">提醒:</string>
     
     <string name="meet_remind">会议提醒</string>
     <string name="remind_ok">知道了</string>
     
+      <string name="float_tittle">今日剩余会议</string>
     
-    <string name="label_topic">主题</string>
-    <string name="label_location">地点</string>
+  
+    <string name="label_topic">主题:</string>
+    <string name="label_location">地点:</string>
     
-    <string name="meet_topic">开会</string>
+    <string name="meet_topic">会议标题：（默认开会）</string>
     <string name="meet_loc">公司</string>
     <string name="meet_remind_time">15分钟前</string>
+    
+    <string name="setting">设置</string>
+     <string name="float_switch">悬浮窗</string>
+      <string name="float_edge_switch">边缘吸附</string>
+     <string name="edit_location">修改常用会议地点列表</string>
+     <string name="share_qq">分享应用到qq</string>
     
     
 </resources>

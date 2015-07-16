@@ -53,6 +53,7 @@ public class MeetUtil {
 			serializer.attribute(null, XmlItem.ATTR_LOCATION, meet.location);
 			serializer.attribute(null, XmlItem.ATTR_PRE_TIME, String.valueOf(meet.preMinute));
 			serializer.attribute(null, XmlItem.ATTR_WHEN, String.valueOf(meet.dateMillis));
+			serializer.attribute(null, XmlItem.ATTR_LAST_TIME, String.valueOf(meet.lastTime));
 
 			serializer.endTag(null, XmlItem.TAG_MEET);
 
@@ -105,7 +106,10 @@ public class MeetUtil {
 
 					meet.topic = xmlParser.getAttributeValue(null, XmlItem.ATTR_TOPIC);
 					meet.location = xmlParser.getAttributeValue(null, XmlItem.ATTR_LOCATION);
-
+					String lastTimeString=xmlParser.getAttributeValue(null, XmlItem.ATTR_LAST_TIME);
+					if (lastTimeString!=null&&lastTimeString.length()!=0) {
+						meet.lastTime=Float.parseFloat(lastTimeString);
+					}		
 					String when = xmlParser.getAttributeValue(null, XmlItem.ATTR_WHEN);
 					meet.dateMillis = Long.parseLong(when);
 

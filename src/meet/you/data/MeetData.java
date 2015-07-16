@@ -1,5 +1,6 @@
 package meet.you.data;
 
+import android.R.integer;
 import android.net.Uri;
 
 public interface MeetData {
@@ -13,6 +14,7 @@ public interface MeetData {
 	public static String KEY_WHEN = MeetProvider.KEY_DATE;
 	public static String KEY_WHERE = MeetProvider.KEY_WHERE;
 	public static String KEY_PRE_TIME = MeetProvider.KEY_PRE_TIME;
+	public static String KEY_LAST_TIME = MeetProvider.KEY_LAST_TIME;
 	
 	public static String ACTION_MEET_VIEW = "meet.action.VIEW";
 	public static String ACTION_MEET_EDIT = "meet.action.EDIT";
@@ -24,6 +26,7 @@ public interface MeetData {
 		public String location;
 		public long dateMillis;
 		public int  preMinute;
+		public float lastTime;
 		public Uri dbUri;
 	}
 	
@@ -33,6 +36,7 @@ public interface MeetData {
 		public static String ATTR_WHEN = "when";
 		public static String ATTR_LOCATION = "location";
 		public static String ATTR_PRE_TIME = "pretime";
+		public static String ATTR_LAST_TIME = "pretime";
 	}
 	
 

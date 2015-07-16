@@ -403,8 +403,8 @@ public class MonthByWeekFragment extends SimpleDayPickerFragment implements
                 mAdapter.setSelectedDay(mDesiredDay);
                 useSelected = true;
             } else {
-                mSelectedDay.set(time);
-                mAdapter.setSelectedDay(time);
+//                mSelectedDay.set(time);
+//                mAdapter.setSelectedDay(time);
             }
             CalendarController controller = CalendarController.getInstance(mContext);
             if (mSelectedDay.minute >= 30) {
